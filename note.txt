@@ -1,0 +1,7 @@
+server.js => init() => declare services & port,host,route,cors
+register plugin, service, validator
+start server
+
+Service => connection to database
+
+Plugin => API (handler,routes)
