@@ -37,6 +37,11 @@ exports.up = function (db, callback) {
       notNull: true,
       length: 50
     },
+    password: {
+      type: 'string',
+      notNull: true,
+      length: 255
+    },
     branch_code: {
       type: 'string',
       notNull: true,

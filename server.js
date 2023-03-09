@@ -17,13 +17,39 @@ const init = async () => {
     }
   })
 
+  server.state('data', {
+    ttl: null,
+    isSecure: true,
+    isHttpOnly: true,
+    encoding: 'base64json',
+    clearInvalid: true,
+    strictHeader: true
+  })
+
   await server.register([{
     plugin: UserPlugin,
     options: {
       service: userService,
       validator: UserValidator
     }
+  },
+  {
+    plugin: require('@hapi/cookie')
   }])
+
+  // server.auth.strategy('login', 'cookie', {
+  //   cookie: {
+  //     name: 'session',
+  //     password: 'kemayoran20231234567890',
+  //     isSecure: false
+  //   },
+  //   redirectTo: '/login'
+  //   // validateFunc: async (request, session) => {
+
+  //   // }
+  // })
+
+  // server.auth.default('login')
 
   await server.start()
   console.log(`Server berjalan pada ${server.info.uri}`)

@@ -6,14 +6,15 @@ class UserHandler {
     this._validator = validator
 
     this.postUserHandler = this.postUserHandler.bind(this)
+    this.loginHandler = this.loginHandler.bind(this)
   }
 
   async postUserHandler (request, h) {
     try {
       this._validator.validateUserPayload(request.payload)
-      const { userId, fullName, shortName, branchCode, levelId } = request.payload
+      const { userId, fullName, shortName, password, branchCode, levelId } = request.payload
 
-      const result = await this._service.addUser({ userId, fullName, shortName, branchCode, levelId })
+      const result = await this._service.addUser({ userId, fullName, shortName, password, branchCode, levelId })
       const response = h.response({
         status: 'success',
         data: {
@@ -39,6 +40,22 @@ class UserHandler {
       })
       response.code(500)
       console.error(error)
+      return response
+    }
+  }
+
+  async loginHandler (request, h) {
+    const { userId, password } = request.payload
+    const result = await this._service.loginUser({ userId })
+    if (password === result.password) {
+      console.log(result)
+      const response = h.response({
+        status: 'success',
+        data: {
+          result
+        }
+      })
+      response.code(201)
       return response
     }
   }
