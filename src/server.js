@@ -1,9 +1,10 @@
 require('dotenv').config()
 
 const Hapi = require('@hapi/hapi')
-const { UserPlugin } = require('./src/api')
-const { UserService } = require('./src/services/database/UserService')
-const { UserValidator } = require('./src/validator')
+const Jwt = require('@hapi/jwt')
+const { UserPlugin } = require('./api')
+const { UserService } = require('./services/database/UserService')
+const { UserValidator } = require('./validator')
 
 const init = async () => {
   const userService = new UserService()

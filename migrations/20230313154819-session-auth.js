@@ -16,47 +16,25 @@ exports.setup = function (options, seedLink) {
 }
 
 exports.up = function (db, callback) {
-  db.createTable('user_access', {
-    id: {
-      type: 'int',
-      primaryKey: true,
-      autoIncrement: true
+  db.createTable('session_auth', {
+    token: {
+      type: 'string',
+      notNull: true
+    },
+    session_id: {
+      type: 'string',
+      notNull: true,
+      length: 12
     },
     user_id: {
       type: 'string',
       notNull: true,
-      length: 8,
-      unique: true
-    },
-    full_name: {
-      type: 'string',
-      notNull: true,
-      length: 50
-    },
-    short_name: {
-      type: 'string',
-      notNull: true,
-      length: 50
-    },
-    password: {
-      type: 'string',
-      notNull: true,
-      length: 255
-    },
-    branch_code: {
-      type: 'string',
-      notNull: true,
       length: 8
-    },
-    level_id: {
-      type: 'string',
-      notNull: true,
-      length: 3
     },
     created_at: {
       type: 'date'
     },
-    updated_at: {
+    expired_at: {
       type: 'date'
     }
   }, function (err) {
@@ -64,8 +42,9 @@ exports.up = function (db, callback) {
     return callback()
   })
 }
+
 exports.down = function (db, callback) {
-  db.dropTable('user_access', callback)
+  db.dropTable('session_auth', callback)
 }
 
 exports._meta = {

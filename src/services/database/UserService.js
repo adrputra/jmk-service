@@ -1,3 +1,4 @@
+/* eslint-disable no-sequences */
 const { Pool } = require('../../config/connection')
 const { InvariantError, NotFoundError } = require('../../exceptions/ErrorHandler')
 
@@ -6,27 +7,34 @@ class UserService {
     this._pool = Pool
   }
 
-  async addUser ({ userId, fullName, shortName, password, branchCode, levelId }) {
+  async addUser (data) {
     const createdAt = new Date()
 
     const query = {
       text: 'INSERT INTO user_access VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)',
-      values: [null, userId, fullName, shortName, password, branchCode, levelId, createdAt, createdAt]
+      values: [null, data.userId, data.fullName, data.shortName, data.password, data.branchCode, data.levelId, createdAt, createdAt]
     }
 
-    await this._pool.query(query.text, query.values, (err, rows) => {
-      if (err) {
-        throw new InvariantError('Failed to add user.')
-      }
-      return rows
-    })
-    // if (!result.rows) {
-    //   throw new InvariantError('Failed to add user.')
-    // }
-    // return result.rows
+    try {
+      const result = await new Promise((resolve, reject) => {
+        this._pool.query(query.text, query.values, (err, res) => {
+          if (err) {
+            console.log('CB ERR', err.message)
+            reject(err)
+          }
+          console.log('CB RES', res)
+          resolve(res)
+        })
+      })
+      console.log('RES SERVICE', result)
+      return { result, err: null }
+    } catch (error) {
+      console.log('ERR SERVICE', error.sqlMessage)
+      return { result: null, err: error }
+    }
   }
 
-  async editUser ({ userId, fullName, shortName, password, branchCode, levelId }) {
+  async editUser ({ fullName, shortName, password, branchCode, levelId }) {
     const updatedAt = Date.now()
 
     const query = {
@@ -41,17 +49,17 @@ class UserService {
     return result.rows
   }
 
-  async loginUser ({ userId }) {
+  async getUser ({ userId }) {
     const query = {
       text: 'SELECT * FROM user_access WHERE user_id = ?',
       values: [userId]
     }
-    await this._pool.query(query.text, query.values, (err, rows) => {
+    await this._pool.query(query.text, query.values, (err, result) => {
       if (err) {
         throw new NotFoundError('User ID not found.')
       }
       // console.log('DATA', rows[0].password)
-      return rows
+      return result
     })
   }
 }

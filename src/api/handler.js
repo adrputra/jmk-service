@@ -12,14 +12,26 @@ class UserHandler {
   async postUserHandler (request, h) {
     try {
       this._validator.validateUserPayload(request.payload)
-      const { userId, fullName, shortName, password, branchCode, levelId } = request.payload
+      const data = request.payload
 
-      const result = await this._service.addUser({ userId, fullName, shortName, password, branchCode, levelId })
+      // const result = this._service.addUser(data)
+      const { result, err } = await this._service.addUser(data)
+      console.log('AAA', result, err)
+      if (err != null) {
+        const response = h.response({
+          status: 'fail',
+          statusCode: '0',
+          message: err.message
+        })
+        response.code(400)
+        return response
+      }
+      console.info('AAA', result)
       const response = h.response({
         status: 'success',
-        data: {
-          result
-        }
+        code: 201,
+        statusCode: '1',
+        message: { Description: 'Registered Successfully', result }
       })
       response.code(201)
       return response
@@ -46,7 +58,7 @@ class UserHandler {
 
   async loginHandler (request, h) {
     const { userId, password } = request.payload
-    const result = await this._service.loginUser({ userId })
+    const result = await this._service.getUser({ userId })
     if (password === result.password) {
       console.log(result)
       const response = h.response({
