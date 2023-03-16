@@ -19,17 +19,17 @@ class UserService {
       const result = await new Promise((resolve, reject) => {
         this._pool.query(query.text, query.values, (err, res) => {
           if (err) {
-            console.log('CB ERR', err.message)
+            // console.log('CB ERR', err.message)
             reject(err)
           }
-          console.log('CB RES', res)
+          // console.log('CB RES', res)
           resolve(res)
         })
       })
-      console.log('RES SERVICE', result)
+      // console.log('RES SERVICE', result)
       return { result, err: null }
     } catch (error) {
-      console.log('ERR SERVICE', error.sqlMessage)
+      // console.log('ERR SERVICE', error.sqlMessage)
       return { result: null, err: error }
     }
   }
@@ -54,13 +54,23 @@ class UserService {
       text: 'SELECT * FROM user_access WHERE user_id = ?',
       values: [userId]
     }
-    await this._pool.query(query.text, query.values, (err, result) => {
-      if (err) {
-        throw new NotFoundError('User ID not found.')
-      }
-      // console.log('DATA', rows[0].password)
-      return result
-    })
+    try {
+      const result = await new Promise((resolve, reject) => {
+        this._pool.query(query.text, query.values, (err, res) => {
+          if (err) {
+            // console.log('CB ERR', err.message)
+            reject(err)
+          }
+          // console.log('CB RES', res)
+          resolve(res)
+        })
+      })
+      // console.log('RES SERVICE', result)
+      return { result, err: null }
+    } catch (error) {
+      // console.log('ERR SERVICE', error.sqlMessage)
+      return { result: null, err: error }
+    }
   }
 }
 

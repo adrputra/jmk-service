@@ -1,7 +1,7 @@
 require('dotenv').config()
 
 const Hapi = require('@hapi/hapi')
-const Jwt = require('@hapi/jwt')
+const cookie = require('@hapi/cookie')
 const { UserPlugin } = require('./api')
 const { UserService } = require('./services/database/UserService')
 const { UserValidator } = require('./validator')
@@ -18,14 +18,21 @@ const init = async () => {
     }
   })
 
-  server.state('data', {
-    ttl: null,
-    isSecure: true,
-    isHttpOnly: true,
-    encoding: 'base64json',
-    clearInvalid: true,
-    strictHeader: true
+  await server.register(cookie)
+
+  server.auth.strategy('session', 'cookie', {
+    cookie: {
+      name: 'session',
+      password: 'super-secure-cookie-pass-at-least-32chars',
+      isSecure: false, // In Prod should be True.
+      ttl: 60 * 60 * 1000,
+      isSameSite: 'Lax',
+      path: '/'
+    },
+    redirectTo: false,
+    keepAlive: true
   })
+  server.auth.default('session')
 
   await server.register([{
     plugin: UserPlugin,
@@ -33,10 +40,8 @@ const init = async () => {
       service: userService,
       validator: UserValidator
     }
-  },
-  {
-    plugin: require('@hapi/cookie')
-  }])
+  }
+  ])
 
   // server.auth.strategy('login', 'cookie', {
   //   cookie: {
