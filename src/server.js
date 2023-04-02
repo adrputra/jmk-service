@@ -25,7 +25,7 @@ const init = async () => {
       name: 'session',
       password: 'super-secure-cookie-pass-at-least-32chars',
       isSecure: false, // In Prod should be True.
-      ttl: 60 * 60 * 1000,
+      ttl: 12 * 60 * 60 * 1000,
       isSameSite: 'Lax',
       path: '/'
     },

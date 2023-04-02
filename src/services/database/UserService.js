@@ -1,6 +1,5 @@
 /* eslint-disable no-sequences */
 const { Pool } = require('../../config/connection')
-const { InvariantError, NotFoundError } = require('../../exceptions/ErrorHandler')
 
 class UserService {
   constructor () {
@@ -34,25 +33,10 @@ class UserService {
     }
   }
 
-  async editUser ({ fullName, shortName, password, branchCode, levelId }) {
-    const updatedAt = Date.now()
-
+  async getUser (data) {
     const query = {
-      text: 'UPDATE user_access SET ful_name = $1, short_name = $2, password = $3 branch_code = $4, level_id = $5, updated_at = $6 RETURNING id, user_id, full_name, short_name, branch_code, level_id, created_at, updated_at',
-      values: [fullName, shortName, password, branchCode, levelId, updatedAt]
-    }
-    const result = await this._pool.query(query)
-
-    if (!result.rows) {
-      return new NotFoundError('Failed to edit user.')
-    }
-    return result.rows
-  }
-
-  async getUser ({ userId }) {
-    const query = {
-      text: 'SELECT * FROM user_access WHERE user_id = ?',
-      values: [userId]
+      text: 'SELECT DISTINCT * FROM user_access WHERE user_id = ?',
+      values: [data.userId]
     }
     try {
       const result = await new Promise((resolve, reject) => {
@@ -69,6 +53,34 @@ class UserService {
       return { result, err: null }
     } catch (error) {
       // console.log('ERR SERVICE', error.sqlMessage)
+      return { result: null, err: error }
+    }
+  }
+
+  async addSession (data) {
+    const createdAt = new Date()
+    const expiredAt = new Date(createdAt.getTime() + 8 * 60 * 60 * 1000)
+
+    const query = {
+      text: 'INSERT INTO session_auth VALUES(?, ?, ?, ?, ?)',
+      values: [data.uid, data.session, data.userId, createdAt, expiredAt]
+    }
+
+    try {
+      const result = await new Promise((resolve, reject) => {
+        this._pool.query(query.text, query.values, (err, res) => {
+          if (err) {
+            console.log('CB ERR', err.message)
+            reject(err)
+          }
+          console.log('CB RES', res)
+          resolve(res)
+        })
+      })
+      console.log('RES SERVICE', result)
+      return { result, err: null }
+    } catch (error) {
+      console.log('ERR SERVICE', error.sqlMessage)
       return { result: null, err: error }
     }
   }

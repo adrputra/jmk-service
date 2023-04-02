@@ -24,7 +24,7 @@ exports.up = function (db, callback) {
     session_id: {
       type: 'string',
       notNull: true,
-      length: 12
+      length: 36
     },
     user_id: {
       type: 'string',
@@ -32,10 +32,10 @@ exports.up = function (db, callback) {
       length: 8
     },
     created_at: {
-      type: 'date'
+      type: 'datetime'
     },
     expired_at: {
-      type: 'date'
+      type: 'datetime'
     }
   }, function (err) {
     if (err) return callback(err)
