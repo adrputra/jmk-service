@@ -4,7 +4,10 @@
   "description": "",
   "main": "server.js",
   "scripts": {
+    "db-down": "db-migrate down",
+    "db-up": "db-migrate up",
     "dev": "nodemon ./src/server.js",
+    "serve": "npm run db-down && npm run db-up && npm run dev",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
