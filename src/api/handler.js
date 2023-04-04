@@ -24,7 +24,7 @@ class UserHandler {
       if (err != null) {
         const response = h.response({
           status: 'fail',
-          statusCode: '0',
+          statusCode: 0,
           message: err.message
         })
         response.code(400)
@@ -34,7 +34,7 @@ class UserHandler {
       const response = h.response({
         status: 'success',
         code: 201,
-        statusCode: '1',
+        statusCode: 1,
         message: { Description: 'Registered Successfully', result }
       })
       response.code(201)
@@ -43,7 +43,7 @@ class UserHandler {
     } catch (error) {
       const response = h.response({
         status: 'fail',
-        statusCode: '0',
+        statusCode: 0,
         message: error.message
       })
       response.code(400)
@@ -60,7 +60,7 @@ class UserHandler {
       if (err != null) {
         const response = h.response({
           status: 'fail',
-          statusCode: '0',
+          statusCode: 0,
           message: err.message
         })
         response.code(400)
@@ -68,13 +68,6 @@ class UserHandler {
       }
 
       if (DecryptPassword(data.password, result[0].password)) {
-        const response = h.response({
-          status: 'success',
-          code: 200,
-          statusCode: '1',
-          message: { Description: 'Login Successfully', result }
-        })
-
         const dataSession = {
           uid: uuidv4(100),
           session: uuidv4(),
@@ -85,21 +78,39 @@ class UserHandler {
         if (errSession != null) {
           const response = h.response({
             status: 'fail',
-            statusCode: '0',
+            statusCode: 0,
             message: err.message
           })
           response.code(400)
           return response
         }
 
-        request.cookieAuth.set({ uid: dataSession.uid, session: dataSession.session, userId: dataSession.userId, expiredAt: resSession[0].expired_at })
-        response.code(200)
+        const cookie = { uid: dataSession.uid, session: dataSession.session, userId: dataSession.userId }
+
+        request.cookieAuth.set(cookie)
+        
+        const response = h.response({
+          status: 'success',
+          code: 200,
+          statusCode: 1,
+          message: { Description: 'Login Successfully', result, session: cookie }
+        })
+
+        return response
+      } else {
+        const response = h.response({
+          status: 'fail',
+          code: 404,
+          statusCode: 0,
+          message: { Description: 'Login Failed' }
+        })
+
         return response
       }
     } catch (error) {
       const response = h.response({
         status: 'fail',
-        statusCode: '0',
+        statusCode: 0,
         message: error.message
       })
       response.code(400)

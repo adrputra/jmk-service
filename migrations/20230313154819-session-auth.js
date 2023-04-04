@@ -17,6 +17,11 @@ exports.setup = function (options, seedLink) {
 
 exports.up = function (db, callback) {
   db.createTable('session_auth', {
+    id: {
+      type: 'int',
+      primaryKey: true,
+      autoIncrement: true
+    },
     token: {
       type: 'string',
       notNull: true
@@ -24,7 +29,8 @@ exports.up = function (db, callback) {
     session_id: {
       type: 'string',
       notNull: true,
-      length: 36
+      length: 36,
+      unique: true
     },
     user_id: {
       type: 'string',
