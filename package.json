@@ -4,7 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "db-down": "db-migrate down",
+    "db-down": "db-migrate reset",
     "db-up": "db-migrate up",
     "dev": "nodemon ./src/server.js",
     "serve": "npm run db-down && npm run db-up && npm run dev",

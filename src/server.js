@@ -2,12 +2,14 @@ require('dotenv').config()
 
 const Hapi = require('@hapi/hapi')
 const cookie = require('@hapi/cookie')
-const { UserPlugin } = require('./api')
+const { UserPlugin, InvitationPlugin } = require('./api')
 const { UserService } = require('./services/database/UserService')
-const { UserValidator } = require('./validator')
+const { InvitationService } = require('./services/database/InvitationService')
+const { UserValidator, InvitationValidator } = require('./validator')
 
 const init = async () => {
   const userService = new UserService()
+  const invitationService = new InvitationService()
   const server = Hapi.server({
     port: process.env.PORT,
     host: process.env.HOST,
@@ -40,22 +42,15 @@ const init = async () => {
       service: userService,
       validator: UserValidator
     }
+  },
+  {
+    plugin: InvitationPlugin,
+    options: {
+      service: invitationService,
+      validator: InvitationValidator
+    }
   }
   ])
-
-  // server.auth.strategy('login', 'cookie', {
-  //   cookie: {
-  //     name: 'session',
-  //     password: 'kemayoran20231234567890',
-  //     isSecure: false
-  //   },
-  //   redirectTo: '/login'
-  //   // validateFunc: async (request, session) => {
-
-  //   // }
-  // })
-
-  // server.auth.default('login')
 
   await server.start()
   console.log(`Server berjalan pada ${server.info.uri}`)

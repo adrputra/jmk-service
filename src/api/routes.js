@@ -7,14 +7,34 @@ const userRoutes = (handler) => [
       handler: handler.addUserHandler
     }
   },
+  // {
+  //   method: 'POST',
+  //   path: '/user/id',
+  //   options: {
+  //     auth: { mode: 'optional' },
+  //     handler: handler.qrcodeHandler
+  //   }
+  // },
   {
     method: 'POST',
     path: '/user/login',
     options: {
       auth: { mode: 'try' },
+      cors: true,
       handler: handler.loginHandler
     }
   }
 ]
 
-module.exports = { userRoutes }
+const invitationRoutes = (handler) => [
+  {
+    method: 'POST',
+    path: '/invitation',
+    options: {
+      auth: { mode: 'try' },
+      handler: handler.getInvitationHandler
+    }
+  }
+]
+
+module.exports = { userRoutes, invitationRoutes }

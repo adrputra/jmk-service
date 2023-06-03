@@ -9,4 +9,8 @@ const UserPayloadSchema = Joi.object({
   levelId: Joi.string().required()
 })
 
-module.exports = { UserPayloadSchema }
+const InvitationCodeSchema = Joi.object({
+  code: Joi.string().required()
+})
+
+module.exports = { UserPayloadSchema, InvitationCodeSchema }
