@@ -13,4 +13,8 @@ const InvitationCodeSchema = Joi.object({
   code: Joi.string().required()
 })
 
-module.exports = { UserPayloadSchema, InvitationCodeSchema }
+const InvitationListSchema = Joi.object({
+  userId: Joi.string().required()
+})
+
+module.exports = { UserPayloadSchema, InvitationCodeSchema, InvitationListSchema }

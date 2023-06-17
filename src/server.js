@@ -2,10 +2,11 @@ require('dotenv').config()
 
 const Hapi = require('@hapi/hapi')
 const cookie = require('@hapi/cookie')
-const { UserPlugin, InvitationPlugin } = require('./api')
+const { UserPlugin } = require('./api/User')
+const { InvitationPlugin } = require('./api/Invitation')
 const { UserService } = require('./services/database/UserService')
 const { InvitationService } = require('./services/database/InvitationService')
-const { UserValidator, InvitationValidator } = require('./validator')
+const { UserValidator, InvitationValidator, InvitationListValidator } = require('./validator')
 
 const init = async () => {
   const userService = new UserService()
@@ -15,6 +16,7 @@ const init = async () => {
     host: process.env.HOST,
     routes: {
       cors: {
+        credentials: true,
         origin: ['*']
       }
     }
@@ -29,6 +31,7 @@ const init = async () => {
       isSecure: false, // In Prod should be True.
       ttl: 12 * 60 * 60 * 1000,
       isSameSite: 'Lax',
+      isHttpOnly: false,
       path: '/'
     },
     redirectTo: false,
@@ -47,7 +50,7 @@ const init = async () => {
     plugin: InvitationPlugin,
     options: {
       service: invitationService,
-      validator: InvitationValidator
+      validator: [InvitationValidator, InvitationListValidator]
     }
   }
   ])

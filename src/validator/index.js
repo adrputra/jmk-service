@@ -1,4 +1,4 @@
-const { UserPayloadSchema, InvitationCodeSchema } = require('./schema')
+const { UserPayloadSchema, InvitationCodeSchema, InvitationListSchema } = require('./schema')
 const { InvariantError } = require('../exceptions/ErrorHandler')
 
 const UserValidator = {
@@ -19,4 +19,13 @@ const InvitationValidator = {
   }
 }
 
-module.exports = { UserValidator, InvitationValidator }
+const InvitationListValidator = {
+  validateInvitationListPayload: (payload) => {
+    const validationResult = InvitationListSchema.validate(payload)
+    if (validationResult.error) {
+      throw new InvariantError(validationResult.error.message)
+    }
+  }
+}
+
+module.exports = { UserValidator, InvitationValidator, InvitationListValidator }

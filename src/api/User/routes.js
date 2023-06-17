@@ -26,15 +26,4 @@ const userRoutes = (handler) => [
   }
 ]
 
-const invitationRoutes = (handler) => [
-  {
-    method: 'POST',
-    path: '/invitation',
-    options: {
-      auth: { mode: 'try' },
-      handler: handler.getInvitationHandler
-    }
-  }
-]
-
-module.exports = { userRoutes, invitationRoutes }
+module.exports = { userRoutes }
