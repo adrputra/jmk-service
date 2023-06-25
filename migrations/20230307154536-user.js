@@ -54,10 +54,10 @@ exports.up = function (db, callback) {
       length: 3
     },
     created_at: {
-      type: 'date'
+      type: 'datetime'
     },
     updated_at: {
-      type: 'date'
+      type: 'datetime'
     }
   }, function (err) {
     if (err) return callback(err)

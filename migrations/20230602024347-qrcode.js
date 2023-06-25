@@ -16,17 +16,13 @@ exports.setup = function (options, seedLink) {
 }
 
 exports.up = function (db, callback) {
-  db.createTable('session_auth', {
+  db.createTable('invitation_code', {
     id: {
       type: 'int',
       primaryKey: true,
       autoIncrement: true
     },
-    token: {
-      type: 'string',
-      notNull: true
-    },
-    session_id: {
+    code: {
       type: 'string',
       notNull: true,
       length: 36,
@@ -37,10 +33,19 @@ exports.up = function (db, callback) {
       notNull: true,
       length: 8
     },
-    created_at: {
-      type: 'datetime'
+    name: {
+      type: 'string'
     },
-    expired_at: {
+    level: {
+      type: 'string'
+    },
+    phone_number: {
+      type: 'string'
+    },
+    pax: {
+      type: 'string'
+    },
+    created_at: {
       type: 'datetime'
     }
   }, function (err) {
@@ -50,7 +55,7 @@ exports.up = function (db, callback) {
 }
 
 exports.down = function (db, callback) {
-  db.dropTable('session_auth', callback)
+  db.dropTable('invitation_code', callback)
 }
 
 exports._meta = {
