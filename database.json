@@ -5,6 +5,6 @@
       "port": "3306",
       "user": "root",
       "password": "Biznet8@adr",
-      "database": "invitation-svc"
+      "database": "invitation_svc"
     }
   }
