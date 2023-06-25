@@ -42,10 +42,10 @@ exports.up = function (db, callback) {
     phone_number: {
       type: 'string'
     },
-    created_at: {
-      type: 'datetime'
+    pax: {
+      type: 'string'
     },
-    expired_at: {
+    created_at: {
       type: 'datetime'
     }
   }, function (err) {

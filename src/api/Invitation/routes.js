@@ -9,10 +9,18 @@ const invitationRoutes = (handler) => [
   },
   {
     method: 'POST',
-    path: '/invitationlist',
+    path: '/invitation/list',
     options: {
-      auth: { mode: 'try' },
+      auth: { mode: 'required' },
       handler: handler.getInvitationListHandler
+    }
+  },
+  {
+    method: 'POST',
+    path: '/invitation/add',
+    options: {
+      auth: { mode: 'required' },
+      handler: handler.addInvitationHandler
     }
   }
 ]

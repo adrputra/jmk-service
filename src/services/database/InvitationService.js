@@ -31,6 +31,33 @@ class InvitationService {
     }
   }
 
+  async addInvitation (data) {
+    const createdAt = new Date()
+
+    const query = {
+      text: 'INSERT INTO invitation_code VALUES(?, ?, ?, ?, ?, ?, ?, ?)',
+      values: [null, data.code, data.userId, data.name, data.level, data.phoneNumber, createdAt, createdAt]
+    }
+
+    try {
+      const result = await new Promise((resolve, reject) => {
+        this._pool.query(query.text, query.values, (err, res) => {
+          if (err) {
+            // console.log('CB ERR', err.message)
+            reject(err)
+          }
+          // console.log('CB RES', res)
+          resolve(res)
+        })
+      })
+      // console.log('RES SERVICE', result)
+      return { result, err: null }
+    } catch (error) {
+      // console.log('ERR SERVICE', error.sqlMessage)
+      return { result: null, err: error }
+    }
+  }
+
   async getInvitationList (data) {
     const query = {
       text: 'SELECT code, user_id, name, level, phone_number FROM invitation_code WHERE user_id = ?',

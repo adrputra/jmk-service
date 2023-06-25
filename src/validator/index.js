@@ -11,7 +11,7 @@ const UserValidator = {
 }
 
 const InvitationValidator = {
-  validateInvitationPayload: (payload) => {
+  validateInvitationCodePayload: (payload) => {
     const validationResult = InvitationCodeSchema.validate(payload)
     if (validationResult.error) {
       throw new InvariantError(validationResult.error.message)

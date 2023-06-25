@@ -27,8 +27,9 @@ const init = async () => {
   server.auth.strategy('session', 'cookie', {
     cookie: {
       name: 'session',
-      password: 'super-secure-cookie-pass-at-least-32chars',
+      password: 'look-at-the-stars-look-how-they-shine-for-you',
       isSecure: false, // In Prod should be True.
+      // ttl: 5 * 1000,
       ttl: 12 * 60 * 60 * 1000,
       isSameSite: 'Lax',
       isHttpOnly: false,
