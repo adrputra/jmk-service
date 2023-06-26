@@ -8,7 +8,8 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 
 # Install application dependencies
-RUN npm install
+RUN npm cache clean --force
+RUN yarn install
 RUN npm ci --omit=dev
 
 # Copy the application code to the working directory
