@@ -1,10 +1,10 @@
 {
     "dev": {
       "driver": "mysql",
-      "host": "localhost",
+      "host": "mysql-container",
       "port": "3306",
       "user": "root",
-      "password": "Biznet8@adr",
+      "password": "",
       "database": "invitation_svc"
     }
   }
