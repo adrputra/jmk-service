@@ -1,4 +1,4 @@
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcryptjs')
 
 const EncryptPassword = (password) => {
   const hash = bcrypt.hashSync(password, 10)
