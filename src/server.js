@@ -1,3 +1,5 @@
+const fs = require('fs')
+const Path = require('path')
 require('dotenv').config()
 
 const Hapi = require('@hapi/hapi')
@@ -19,6 +21,10 @@ const init = async () => {
         credentials: true,
         origin: ['*']
       }
+    },
+    tls: {
+      key: fs.readFileSync(Path.resolve(__dirname, 'ssl/private.key')),
+      cert: fs.readFileSync(Path.resolve(__dirname, 'ssl/certificate.crt'))
     }
   })
 
