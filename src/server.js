@@ -28,11 +28,11 @@ const init = async () => {
     cookie: {
       name: 'session',
       password: 'look-at-the-stars-look-how-they-shine-for-you',
-      isSecure: false, // In Prod should be True.
+      isSecure: true, // In Prod should be True.
       // ttl: 5 * 1000,
       ttl: 12 * 60 * 60 * 1000,
       isSameSite: 'Lax',
-      isHttpOnly: false,
+      isHttpOnly: true,
       path: '/'
     },
     redirectTo: false,
