@@ -28,7 +28,7 @@ const init = async () => {
     // }
   })
 
-  await server.register(cookie)
+  await server.register([cookie])
 
   server.auth.strategy('session', 'cookie', {
     cookie: {
