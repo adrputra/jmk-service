@@ -3,7 +3,7 @@ const fs = require('fs')
 const invitationRoutes = (handler) => [
   {
     method: 'POST',
-    path: '/invitation',
+    path: '/api/invitation',
     options: {
       auth: { mode: 'try' },
       handler: handler.getInvitationHandler
@@ -11,7 +11,7 @@ const invitationRoutes = (handler) => [
   },
   {
     method: 'POST',
-    path: '/invitation/list',
+    path: '/api/invitation/list',
     options: {
       auth: { mode: 'required' },
       handler: handler.getInvitationListHandler
@@ -19,7 +19,7 @@ const invitationRoutes = (handler) => [
   },
   {
     method: 'POST',
-    path: '/invitation/add',
+    path: '/api/invitation/add',
     options: {
       auth: { mode: 'required' },
       handler: handler.addInvitationHandler
@@ -27,7 +27,7 @@ const invitationRoutes = (handler) => [
   },
   {
     method: 'GET',
-    path: '/',
+    path: '/api/',
     options: {
       auth: { mode: 'try' },
       handler: (request, h) => {

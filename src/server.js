@@ -39,7 +39,7 @@ const init = async () => {
       ttl: 12 * 60 * 60 * 1000,
       isSameSite: 'Lax',
       isHttpOnly: true,
-      path: '/'
+      path: '/api/'
     },
     redirectTo: false,
     keepAlive: true
