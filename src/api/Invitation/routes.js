@@ -6,7 +6,7 @@ const invitationRoutes = (handler) => [
     path: '/api/invitation',
     options: {
       auth: { mode: 'try' },
-      handler: handler.getInvitationHandler
+      handler: handler.GetInvitationHandler
     }
   },
   {
@@ -14,7 +14,7 @@ const invitationRoutes = (handler) => [
     path: '/api/invitation/list',
     options: {
       auth: { mode: 'required' },
-      handler: handler.getInvitationListHandler
+      handler: handler.GetInvitationListHandler
     }
   },
   {
@@ -22,7 +22,15 @@ const invitationRoutes = (handler) => [
     path: '/api/invitation/add',
     options: {
       auth: { mode: 'required' },
-      handler: handler.addInvitationHandler
+      handler: handler.AddInvitationHandler
+    }
+  },
+  {
+    method: 'POST',
+    path: '/api/invitation/delete',
+    options: {
+      auth: { mode: 'required' },
+      handler: handler.DeleteInvitationHandler
     }
   },
   {

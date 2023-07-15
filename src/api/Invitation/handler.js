@@ -5,17 +5,18 @@ class InvitationHandler {
     this._validatorInvitationCode = validatorInvitationCode
     this._validatorInvitationList = validatorInvitationList
 
-    this.getInvitationHandler = this.getInvitationHandler.bind(this)
-    this.getInvitationListHandler = this.getInvitationListHandler.bind(this)
-    this.addInvitationHandler = this.addInvitationHandler.bind(this)
-    // this.addInvitationHandler = this.addInvitationHandler.bind(this)
+    this.GetInvitationHandler = this.GetInvitationHandler.bind(this)
+    this.GetInvitationListHandler = this.GetInvitationListHandler.bind(this)
+    this.AddInvitationHandler = this.AddInvitationHandler.bind(this)
+    this.DeleteInvitationHandler = this.DeleteInvitationHandler.bind(this)
+    // this.AddInvitationHandler = this.AddInvitationHandler.bind(this)
   }
 
-  async getInvitationHandler (request, h) {
+  async GetInvitationHandler (request, h) {
     try {
       this._validatorInvitationCode.validateInvitationCodePayload(request.payload)
 
-      const { result, err } = await this._service.getInvitation(request.payload)
+      const { result, err } = await this._service.GetInvitation(request.payload)
       if (err != null) {
         const response = h.response({
           status: 'fail',
@@ -47,7 +48,7 @@ class InvitationHandler {
     }
   }
 
-  async addInvitationHandler (request, h) {
+  async AddInvitationHandler (request, h) {
     try {
       // this._validatorInvitationCode.validateInvitationCodePayload(request.payload)
       const generate8DigitUUID = () => {
@@ -59,7 +60,7 @@ class InvitationHandler {
 
       request.payload.code = generate8DigitUUID()
 
-      const { result, err } = await this._service.addInvitation(request.payload)
+      const { result, err } = await this._service.AddInvitation(request.payload)
       if (err != null) {
         const response = h.response({
           status: 'fail',
@@ -91,11 +92,11 @@ class InvitationHandler {
     }
   }
 
-  async getInvitationListHandler (request, h) {
+  async GetInvitationListHandler (request, h) {
     try {
       this._validatorInvitationList.validateInvitationListPayload(request.payload)
 
-      const { result, err } = await this._service.getInvitationList(request.payload)
+      const { result, err } = await this._service.GetInvitationList(request.payload)
       if (err != null) {
         const response = h.response({
           status: 'fail',
@@ -113,6 +114,40 @@ class InvitationHandler {
         code: 200,
         statusCode: 1,
         message: { Description: 'Request Success', Result: result }
+      })
+      response.code(200)
+      return response
+    } catch (error) {
+      const response = h.response({
+        status: 'fail',
+        statusCode: 0,
+        message: error.message
+      })
+      response.code(400)
+      return response
+    }
+  }
+
+  async DeleteInvitationHandler (request, h) {
+    try {
+      const { result, err } = await this._service.DeleteInvitation(request.payload)
+      if (err != null) {
+        const response = h.response({
+          status: 'fail',
+          statusCode: 0,
+          message: err.message
+        })
+        response.code(400)
+        return response
+      }
+
+      // const jsonResult = JSON.stringify(result)
+
+      const response = h.response({
+        status: 'success',
+        code: 200,
+        statusCode: 1,
+        message: { Description: 'Delete Success', Result: result }
       })
       response.code(200)
       return response
