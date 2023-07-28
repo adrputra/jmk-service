@@ -141,6 +141,16 @@ class InvitationHandler {
         return response
       }
 
+      if (result.affectedRows === 0) {
+        const response = h.response({
+          status: 'fail',
+          statusCode: 0,
+          message: 'Data Not Found'
+        })
+        response.code(400)
+        return response
+      }
+
       // const jsonResult = JSON.stringify(result)
 
       const response = h.response({
