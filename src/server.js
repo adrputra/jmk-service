@@ -6,6 +6,7 @@ const Hapi = require('@hapi/hapi')
 const cookie = require('@hapi/cookie')
 const { UserPlugin } = require('./api/User')
 const { InvitationPlugin } = require('./api/Invitation')
+const { FlipPlugin } = require('./api/Flip')
 const { UserService } = require('./services/database/UserService')
 const { InvitationService } = require('./services/database/InvitationService')
 const { UserValidator, InvitationValidator, InvitationListValidator } = require('./validator')
@@ -22,10 +23,6 @@ const init = async () => {
         origin: ['*']
       }
     }
-    // tls: {
-    //   key: fs.readFileSync(Path.resolve(__dirname, 'ssl/private.key')),
-    //   cert: fs.readFileSync(Path.resolve(__dirname, 'ssl/certificate.crt'))
-    // }
   })
 
   await server.register([cookie])
@@ -59,6 +56,9 @@ const init = async () => {
       service: invitationService,
       validator: [InvitationValidator, InvitationListValidator]
     }
+  },
+  {
+    plugin: FlipPlugin
   }
   ])
 
