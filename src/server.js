@@ -3,7 +3,7 @@
 require('dotenv').config()
 
 const Hapi = require('@hapi/hapi')
-const cookie = require('@hapi/cookie')
+const Jwt = require('@hapi/jwt')
 const { UserPlugin } = require('./api/User')
 const { InvitationPlugin } = require('./api/Invitation')
 const { UserService } = require('./services/database/UserService')
@@ -22,29 +22,48 @@ const init = async () => {
         origin: ['*']
       }
     }
-    // tls: {
-    //   key: fs.readFileSync(Path.resolve(__dirname, 'ssl/private.key')),
-    //   cert: fs.readFileSync(Path.resolve(__dirname, 'ssl/certificate.crt'))
-    // }
   })
 
-  await server.register([cookie])
+  await server.register([Jwt])
 
-  server.auth.strategy('session', 'cookie', {
-    cookie: {
-      name: 'session',
-      password: 'look-at-the-stars-look-how-they-shine-for-you',
-      isSecure: true, // In Prod should be True.
-      // ttl: 5 * 1000,
-      ttl: 12 * 60 * 60 * 1000,
-      isSameSite: 'Lax',
-      isHttpOnly: true,
-      path: '/api/'
-    },
-    redirectTo: false,
-    keepAlive: true
+  // server.auth.strategy('session', 'cookie', {
+  //   cookie: {
+  //     name: 'session',
+  //     password: 'look-at-the-stars-look-how-they-shine-for-you',
+  //     isSecure: true, // In Prod should be True.
+  //     // ttl: 5 * 1000,
+  //     ttl: 12 * 60 * 60 * 1000,
+  //     isSameSite: 'Lax',
+  //     isHttpOnly: false,
+  //     path: '/'
+  //   },
+  //   redirectTo: false,
+  //   keepAlive: true
+  // })
+  // server.auth.default('session')
+
+  const mockRequest = { payload: { userId: '1111', password: 'qwerty' } }
+  const mockH = {
+    response: (responseObj) => responseObj
+  }
+
+  const validate = async () => {
+    const loginResponse = await UserPlugin.loginHandler(mockRequest, mockH)
+    console.log(loginResponse)
+
+    if (loginResponse.code === 200) {
+      return { isValid: true, credentials: loginResponse.message.Result.userId }
+    }
+    return { isValid: false }
+  }
+
+  server.auth.strategy('jwt', 'jwt', {
+    keys: process.env.JWT_SECRET, // Use a proper secret key from your environment
+    verify: { aud: false, iss: 'eventarry', sub: 'auth' }, // Optional: Audience verification
+    validate
   })
-  server.auth.default('session')
+
+  server.auth.default('jwt')
 
   await server.register([{
     plugin: UserPlugin,

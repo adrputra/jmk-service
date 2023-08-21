@@ -1,7 +1,8 @@
 /* eslint-disable padded-blocks */
 /* eslint-disable no-trailing-spaces */
-const { EncryptPassword, DecryptPassword } = require('../../config/modules')
+const { EncryptPassword, DecryptPassword, EncryptData, DecryptData } = require('../../config/modules')
 const { v4: uuidv4 } = require('uuid')
+const Jwt = require('jsonwebtoken')
 
 class UserHandler {
   constructor (service, validator) {
@@ -54,8 +55,8 @@ class UserHandler {
 
   async loginHandler (request, h) {
     try {
-
-      const data = request.payload
+      console.log(request)
+      const data = DecryptData(request.payload.request, process.env.ENCRYPTION_SECRET)
       const { result, err } = await this._service.getUser(data)
 
       if (err != null) {
@@ -68,11 +69,24 @@ class UserHandler {
         return response
       }
 
+      const metadata = {
+        userId: result[0].user_id,
+        fullName: result[0].full_name,
+        shortName: result[0].short_name,
+        branchCode: result[0].branch_code,
+        levelId: result[0].level_id
+      }
+      
+      // const payload = EncryptMessage(process.env.JWT_SECRET, JSON.stringify(metadata))
+      const payload = EncryptData(metadata, process.env.ENCRYPTION_SECRET)
+      const token = Jwt.sign({ payload }, process.env.JWT_SECRET, { expiresIn: '8h' })
+
       if (DecryptPassword(data.password, result[0].password)) {
         const dataSession = {
-          uid: uuidv4(100),
-          session: uuidv4(),
-          userId: data.userId
+          uid: uuidv4(8),
+          session: token,
+          userId: data.userId,
+          expiredAt: 8
         }
         const { errSession } = await this._service.addSession(dataSession)
 
@@ -87,17 +101,17 @@ class UserHandler {
         }
 
         // const jsonResult = JSON.stringify(result)
-        const cookie = { uid: dataSession.uid, session: dataSession.session, userId: dataSession.userId }
+        // const cookie = { uid: dataSession.uid, session: dataSession.session, userId: dataSession.userId }
         
         const response = h.response({
           status: 'success',
           code: 200,
           statusCode: 1,
-          message: { Description: 'Login Successfully', Result: result }
+          message: { Description: 'Login Successfully', token }
         })
         
-        request.cookieAuth.set(cookie)
-        response.header('Access-Control-Expose-Headers', 'set-cookie')
+        // request.cookieAuth.set(cookie)
+        // response.header('Access-Control-Expose-Headers', 'set-cookie')
 
         return response
       } else {

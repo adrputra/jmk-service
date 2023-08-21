@@ -59,7 +59,7 @@ class UserService {
 
   async addSession (data) {
     const createdAt = new Date()
-    const expiredAt = new Date(createdAt.getTime() + 8 * 60 * 60 * 1000)
+    const expiredAt = new Date(createdAt.getTime() + data.expiredAt * 60 * 60 * 1000)
 
     const query = {
       text: 'INSERT INTO session_auth VALUES(?, ?, ?, ?, ?, ?)',
