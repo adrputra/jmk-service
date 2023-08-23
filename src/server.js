@@ -42,19 +42,24 @@ const init = async () => {
   // })
   // server.auth.default('session')
 
-  const mockRequest = { payload: { userId: '1111', password: 'qwerty' } }
-  const mockH = {
-    response: (responseObj) => responseObj
-  }
+  // const mockRequest = { payload: { userId: '1111', password: 'qwerty' } }
+  // const mockH = {
+  //   response: (responseObj) => responseObj
+  // }
 
-  const validate = async () => {
-    const loginResponse = await UserPlugin.loginHandler(mockRequest, mockH)
-    console.log(loginResponse)
-
-    if (loginResponse.code === 200) {
-      return { isValid: true, credentials: loginResponse.message.Result.userId }
+  const validate = async (request, h) => {
+    const verifyToken = (artifact, secret, options = {}) => {
+      try {
+        Jwt.token.verify(artifact, secret, options)
+        return { isValid: true }
+      } catch (err) {
+        return {
+          isValid: false,
+          error: err.message
+        }
+      }
     }
-    return { isValid: false }
+    return verifyToken(request, process.env.JWT_SECRET)
   }
 
   server.auth.strategy('jwt', 'jwt', {

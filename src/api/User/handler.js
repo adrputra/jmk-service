@@ -79,7 +79,11 @@ class UserHandler {
       
       // const payload = EncryptMessage(process.env.JWT_SECRET, JSON.stringify(metadata))
       const payload = EncryptData(metadata, process.env.ENCRYPTION_SECRET)
-      const token = Jwt.sign({ payload }, process.env.JWT_SECRET, { expiresIn: '8h' })
+      const token = Jwt.sign({
+        payload,
+        iss: 'eventarry', // Issuer
+        sub: 'auth' 
+      }, process.env.JWT_SECRET, { expiresIn: '8h' })
 
       if (DecryptPassword(data.password, result[0].password)) {
         const dataSession = {
