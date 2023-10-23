@@ -19,9 +19,16 @@ const userRoutes = (handler) => [
     method: 'POST',
     path: '/api/user/login',
     options: {
-      auth: { mode: 'try' },
-      cors: true,
+      auth: { mode: 'optional' },
       handler: handler.loginHandler
+    }
+  },
+  {
+    method: 'POST',
+    path: '/api/user/logout',
+    options: {
+      auth: { mode: 'required' },
+      handler: handler.logoutHandler
     }
   },
   {
