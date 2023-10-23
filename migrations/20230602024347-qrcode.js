@@ -42,6 +42,9 @@ exports.up = function (db, callback) {
     phone_number: {
       type: 'string'
     },
+    status: {
+      type: 'string'
+    },
     pax: {
       type: 'string'
     },
