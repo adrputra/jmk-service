@@ -1,4 +1,6 @@
 const { v4: uuidv4 } = require('uuid')
+const { EncryptData, DecryptData } = require('../../config/modules')
+
 class InvitationHandler {
   constructor (service, [validatorInvitationCode, validatorInvitationList]) {
     this._service = service
@@ -14,9 +16,12 @@ class InvitationHandler {
 
   async GetInvitationHandler (request, h) {
     try {
-      this._validatorInvitationCode.validateInvitationCodePayload(request.payload)
+      const data = DecryptData(request.payload.request, process.env.ENCRYPTION_SECRET)
+      console.log(data)
 
-      const { result, err } = await this._service.GetInvitation(request.payload)
+      this._validatorInvitationCode.validateInvitationCodePayload(data)
+
+      const { result, err } = await this._service.GetInvitation(data)
       if (err != null) {
         const response = h.response({
           status: 'fail',
@@ -27,13 +32,14 @@ class InvitationHandler {
         return response
       }
 
-      const jsonResult = JSON.stringify(result)
+      // const jsonResult = JSON.stringify(result)
+      const payload = EncryptData(result, process.env.ENCRYPTION_SECRET)
 
       const response = h.response({
         status: 'success',
         code: 200,
         statusCode: 1,
-        message: { Description: 'Request Success', Result: jsonResult }
+        message: { Description: 'Request Success', Result: payload }
       })
       response.code(200)
       return response
@@ -50,6 +56,9 @@ class InvitationHandler {
 
   async AddInvitationHandler (request, h) {
     try {
+      const data = DecryptData(request.payload.request, process.env.ENCRYPTION_SECRET)
+      console.log('REQUEST', data)
+
       // this._validatorInvitationCode.validateInvitationCodePayload(request.payload)
       const generate8DigitUUID = () => {
         const uuid = uuidv4().split('-')[0] // Generate a UUID and extract the first part
@@ -58,29 +67,53 @@ class InvitationHandler {
         return eightDigitUUID
       }
 
-      request.payload.code = generate8DigitUUID()
+      data.code = generate8DigitUUID()
 
-      const { result, err } = await this._service.AddInvitation(request.payload)
-      if (err != null) {
+      if (data.act === 'c') {
+        const { result, err } = await this._service.EditInvitation(data)
+        if (err != null) {
+          const response = h.response({
+            status: 'fail',
+            statusCode: 0,
+            message: err.message
+          })
+          response.code(400)
+          return response
+        }
+
+        const payload = EncryptData(result, process.env.ENCRYPTION_SECRET)
+
         const response = h.response({
-          status: 'fail',
-          statusCode: 0,
-          message: err.message
+          status: 'success',
+          code: 200,
+          statusCode: 1,
+          message: { Description: 'Success Change Invitation', Result: payload }
         })
-        response.code(400)
+        response.code(200)
+        return response
+      } else if (data.act === 'a') {
+        const { result, err } = await this._service.AddInvitation(data)
+        if (err != null) {
+          const response = h.response({
+            status: 'fail',
+            statusCode: 0,
+            message: err.message
+          })
+          response.code(400)
+          return response
+        }
+
+        // const jsonResult = JSON.stringify(result)
+        const payload = EncryptData(result, process.env.ENCRYPTION_SECRET)
+        const response = h.response({
+          status: 'success',
+          code: 200,
+          statusCode: 1,
+          message: { Description: 'Success Create New Invitation', Result: payload }
+        })
+        response.code(200)
         return response
       }
-
-      const jsonResult = JSON.stringify(result)
-
-      const response = h.response({
-        status: 'success',
-        code: 200,
-        statusCode: 1,
-        message: { Description: 'Success Create New Invitation', Result: jsonResult }
-      })
-      response.code(200)
-      return response
     } catch (error) {
       const response = h.response({
         status: 'fail',
@@ -94,9 +127,12 @@ class InvitationHandler {
 
   async GetInvitationListHandler (request, h) {
     try {
-      this._validatorInvitationList.validateInvitationListPayload(request.payload)
+      const data = DecryptData(request.payload.request, process.env.ENCRYPTION_SECRET)
+      console.log(data)
 
-      const { result, err } = await this._service.GetInvitationList(request.payload)
+      this._validatorInvitationList.validateInvitationListPayload(data)
+
+      const { result, err } = await this._service.GetInvitationList(data)
       if (err != null) {
         const response = h.response({
           status: 'fail',
@@ -108,12 +144,13 @@ class InvitationHandler {
       }
 
       // const jsonResult = JSON.stringify(result)
+      const payload = EncryptData(result, process.env.ENCRYPTION_SECRET)
 
       const response = h.response({
         status: 'success',
         code: 200,
         statusCode: 1,
-        message: { Description: 'Request Success', Result: result }
+        message: { Description: 'Request Success', Result: payload }
       })
       response.code(200)
       return response
@@ -130,7 +167,10 @@ class InvitationHandler {
 
   async DeleteInvitationHandler (request, h) {
     try {
-      const { result, err } = await this._service.DeleteInvitation(request.payload)
+      const data = DecryptData(request.payload.request, process.env.ENCRYPTION_SECRET)
+      console.log(data)
+
+      const { result, err } = await this._service.DeleteInvitation(data)
       if (err != null) {
         const response = h.response({
           status: 'fail',
@@ -152,12 +192,13 @@ class InvitationHandler {
       }
 
       // const jsonResult = JSON.stringify(result)
+      const payload = EncryptData(result, process.env.ENCRYPTION_SECRET)
 
       const response = h.response({
         status: 'success',
         code: 200,
         statusCode: 1,
-        message: { Description: 'Delete Success', Result: result }
+        message: { Description: 'Delete Success', Result: payload }
       })
       response.code(200)
       return response
