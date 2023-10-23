@@ -84,6 +84,61 @@ class UserService {
       return { result: null, err: error }
     }
   }
+
+  async getSessionIdByUser (data) {
+    const now = new Date()
+    const format = now.toISOString().slice(0, 19).replace('T', ' ')
+    console.log(format)
+
+    const query = {
+      text: 'SELECT session_id FROM session_auth WHERE user_id = ? AND expired_at > ?',
+      values: [data.userId, now]
+    }
+
+    try {
+      const result = await new Promise((resolve, reject) => {
+        this._pool.query(query.text, query.values, (err, res) => {
+          if (err) {
+            // console.log('CB ERR', err.message)
+            reject(err)
+          }
+          // console.log('CB RES', res)
+          resolve(res)
+        })
+      })
+      // console.log('RES SERVICE', result)
+      return { result, err: null }
+    } catch (error) {
+      // console.log('ERR SERVICE', error.sqlMessage)
+      return { result: null, err: error }
+    }
+  }
+
+  async removeSession (data) {
+    const now = new Date()
+
+    const query = {
+      text: 'UPDATE session_auth SET expired_at = ? WHERE session_id = ?',
+      values: [now, data.sessionId]
+    }
+    try {
+      const result = await new Promise((resolve, reject) => {
+        this._pool.query(query.text, query.values, (err, res) => {
+          if (err) {
+            // console.log('CB ERR', err.message)
+            reject(err)
+          }
+          // console.log('CB RES', res)
+          resolve(res)
+        })
+      })
+      // console.log('RES SERVICE', result)
+      return { result, err: null }
+    } catch (error) {
+      // console.log('ERR SERVICE', error.sqlMessage)
+      return { result: null, err: error }
+    }
+  }
 }
 
 module.exports = { UserService }
