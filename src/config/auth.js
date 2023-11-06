@@ -3,7 +3,6 @@ const { Pool } = require('./connection')
 const { DecryptData } = require('./modules')
 
 const validate = async (request, h) => {
-  console.log(request)
   const verifyToken = (token, secret, options = {}) => {
     try {
       Jwt.token.verify(token, secret, options)
@@ -26,8 +25,6 @@ const validate = async (request, h) => {
 
     // If the token is valid, you can extract information from it if needed
     const decodedToken = DecryptData(request.decoded.payload.payload, process.env.ENCRYPTION_SECRET)
-
-    console.log(decodedToken)
 
     // Here, you can add code to check the database for the session_id
     const sessionId = decodedToken.sessionId

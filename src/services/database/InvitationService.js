@@ -36,7 +36,7 @@ class InvitationService {
 
     const query = {
       text: 'INSERT INTO invitation_code VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)',
-      values: [null, data.code, data.userId, data.name, data.level, data.phoneNumber, 'Invited', data.pax, createdAt]
+      values: [null, data.code, data.userId, data.name, data.level, data.phone_number, 'Invited', data.pax, createdAt]
     }
 
     try {
@@ -63,7 +63,7 @@ class InvitationService {
 
     const query = {
       text: 'UPDATE invitation_code SET name = ?, level = ?, phone_number = ?, status = ?, pax = ?, created_at = ? WHERE code = ?',
-      values: [data.name, data.level, data.phoneNumber, data.status, data.pax, createdAt, data.code]
+      values: [data.name, data.level, data.phone_number, data.status, data.pax, createdAt, data.code]
     }
 
     try {
@@ -87,7 +87,7 @@ class InvitationService {
 
   async GetInvitationList (data) {
     const query = {
-      text: 'SELECT code, user_id, name, level, phone_number, status, pax FROM invitation_code WHERE user_id = ?',
+      text: 'SELECT code, name, level, phone_number, status, pax FROM invitation_code WHERE user_id = ?',
       values: [data.userId]
     }
 

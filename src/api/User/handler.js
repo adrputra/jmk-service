@@ -12,6 +12,7 @@ class UserHandler {
     this.addUserHandler = this.addUserHandler.bind(this)
     this.loginHandler = this.loginHandler.bind(this)
     this.logoutHandler = this.logoutHandler.bind(this)
+    this.GetAllUser = this.GetAllUser.bind(this)
     // this.qrcodeHandler = this.qrcodeHandler.bind(this)
   }
 
@@ -57,7 +58,7 @@ class UserHandler {
   async loginHandler (request, h) {
     try {
       const data = DecryptData(request.payload.request, process.env.ENCRYPTION_SECRET)
-      console.log(data)
+      console.log('loginHandler', data)
       const { result, err } = await this._service.getUser(data)
 
       if (err != null) {
@@ -72,7 +73,6 @@ class UserHandler {
 
       if (DecryptPassword(data.password, result[0].password)) {
         const { result: sessionId } = await this._service.getSessionIdByUser(data)        
-        console.log(sessionId[0])
 
         const metadata = {
           userId: result[0].user_id,
@@ -147,8 +147,8 @@ class UserHandler {
 
   async logoutHandler (request, h) {
     try {
-      console.log(request)
       const data = DecryptData(request.payload.request, process.env.ENCRYPTION_SECRET)
+      console.log('logoutHandler', data)
       const { result, err } = await this._service.removeSession(data)
 
       if (err != null) {
@@ -181,6 +181,59 @@ class UserHandler {
       return response
     }
   }
+
+  async GetAllUser (request, h) {
+    try {
+      const data = DecryptData(request.payload.request, process.env.ENCRYPTION_SECRET)
+      console.log('GetAllUser', data)
+      const { result, err } = await this._service.getUser(data)
+
+      if (err != null) {
+        const response = h.response({
+          status: 'fail',
+          statusCode: 0,
+          message: err.message
+        })
+        response.code(400)
+        return response
+      }
+
+      if (result[0].level_id === '0') {
+        const { result, err } = await this._service.GetAllUser(data)
+
+        if (err != null) {
+          const response = h.response({
+            status: 'fail',
+            statusCode: 0,
+            message: err.message
+          })
+          response.code(400)
+          return response
+        }
+
+        const payload = EncryptData(result, process.env.ENCRYPTION_SECRET)
+
+        const response = h.response({
+          status: 'success',
+          code: 200,
+          statusCode: 1,
+          message: { Description: 'Get All User Success', Result: payload }
+        })
+        return response
+
+      }
+
+    } catch (error) {
+      const response = h.response({
+        status: 'fail',
+        statusCode: 0,
+        message: error.message
+      })
+      response.code(400)
+      return response
+    }
+  }
+
 }
 
 module.exports = { UserHandler }

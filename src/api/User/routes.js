@@ -25,6 +25,14 @@ const userRoutes = (handler) => [
   },
   {
     method: 'POST',
+    path: '/api/user',
+    options: {
+      auth: { mode: 'optional' },
+      handler: handler.GetAllUser
+    }
+  },
+  {
+    method: 'POST',
     path: '/api/user/logout',
     options: {
       auth: { mode: 'required' },
