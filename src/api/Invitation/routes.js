@@ -34,6 +34,16 @@ const invitationRoutes = (handler) => [
     }
   },
   {
+    method: 'POST',
+    path: '/api/testconn',
+    options: {
+      auth: { mode: 'optional' },
+      handler: (request, h) => {
+        return h.response('Success Test Connection')
+      }
+    }
+  },
+  {
     method: 'GET',
     path: '/api/',
     options: {
