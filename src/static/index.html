@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+        <html>
+        <head>
+          <title>Minimal Landing Page</title>
+          <style>
+            /* Paste your CSS code here */
+            body {
+              font-family: Arial, sans-serif;
+              margin: 0;
+              padding: 0;
+            }
+        
+            .container {
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              height: 100vh;
+              background-color: #f1f1f1;
+            }
+        
+            .content {
+              text-align: center;
+            }
+        
+            .logo {
+              font-size: 36px;
+              font-weight: bold;
+              color: #333;
+              margin-bottom: 20px;
+            }
+        
+            .landing-image {
+              max-width: 100%;
+              height: auto;
+              margin-bottom: 40px;
+            }
+        
+            .subtitle {
+              font-size: 18px;
+              color: #777;
+              margin-bottom: 40px;
+            }
+        
+            .cta-button {
+              display: inline-block;
+              padding: 12px 24px;
+              font-size: 16px;
+              font-weight: bold;
+              text-decoration: none;
+              background-color: #333;
+              color: #fff;
+              border-radius: 4px;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="content">
+              <h1 class="logo">Minimal Landing Page</h1>
+              <img src="image.jpg" alt="Image" class="landing-image">
+              <p class="subtitle">Welcome to our minimalist landing page.</p>
+              <a class="cta-button" href="#">Get Started</a>
+            </div>
+          </div>
+          <script>
+            /* Paste your JavaScript code here */
+            const landingImage = document.querySelector('.landing-image');
+        
+            landingImage.addEventListener('mouseover', () => {
+              landingImage.classList.add('animate');
+            });
+        
+            landingImage.addEventListener('mouseout', () => {
+              landingImage.classList.remove('animate');
+            });
+          </script>
+        </body>
+        </html>

@@ -1,26 +1,58 @@
+const fs = require('fs')
+
 const invitationRoutes = (handler) => [
   {
     method: 'POST',
-    path: '/invitation',
+    path: '/api/invitation',
     options: {
       auth: { mode: 'try' },
-      handler: handler.getInvitationHandler
+      handler: handler.GetInvitationHandler
     }
   },
   {
     method: 'POST',
-    path: '/invitation/list',
+    path: '/api/invitation/list',
     options: {
       auth: { mode: 'required' },
-      handler: handler.getInvitationListHandler
+      handler: handler.GetInvitationListHandler
     }
   },
   {
     method: 'POST',
-    path: '/invitation/add',
+    path: '/api/invitation/add',
     options: {
       auth: { mode: 'required' },
-      handler: handler.addInvitationHandler
+      handler: handler.AddInvitationHandler
+    }
+  },
+  {
+    method: 'POST',
+    path: '/api/invitation/delete',
+    options: {
+      auth: { mode: 'required' },
+      handler: handler.DeleteInvitationHandler
+    }
+  },
+  {
+    method: 'POST',
+    path: '/api/testconn',
+    options: {
+      auth: { mode: 'optional' },
+      handler: (request, h) => {
+        return h.response('Success Test Connection')
+      }
+    }
+  },
+  {
+    method: 'GET',
+    path: '/api/',
+    options: {
+      auth: { mode: 'try' },
+      handler: (request, h) => {
+        const filePath = 'src/static/index.html'
+        const htmlContent = fs.readFileSync(filePath, 'utf-8')
+        return h.response(htmlContent).code(200)
+      }
     }
   }
 ]
