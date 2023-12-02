@@ -34,7 +34,7 @@ const invitationRoutes = (handler) => [
     }
   },
   {
-    method: 'POST',
+    method: 'GET',
     path: '/api/testconn',
     options: {
       auth: { mode: 'optional' },
