@@ -41,7 +41,7 @@ const userRoutes = (handler) => [
   },
   {
     method: 'GET',
-    path: '/adrputra',
+    path: '/api/adrputra',
     options: {
       auth: { mode: 'try' },
       handler: (request, h) => {
