@@ -16,7 +16,8 @@ class InvitationHandler {
 
   async GetInvitationHandler (request, h) {
     try {
-      const data = DecryptData(request.payload.request, process.env.ENCRYPTION_SECRET)
+      // const data = DecryptData(request.payload.request, process.env.ENCRYPTION_SECRET)
+      const data = request.payload.request
       console.log('GetInvitationHandler', data)
 
       this._validatorInvitationCode.validateInvitationCodePayload(data)
@@ -33,7 +34,8 @@ class InvitationHandler {
       }
 
       // const jsonResult = JSON.stringify(result)
-      const payload = EncryptData(result, process.env.ENCRYPTION_SECRET)
+      // const payload = EncryptData(result, process.env.ENCRYPTION_SECRET)
+      const payload = result
 
       const response = h.response({
         status: 'success',
