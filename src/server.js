@@ -9,11 +9,13 @@ const { UserPlugin } = require('./api/User')
 const { InvitationPlugin } = require('./api/Invitation')
 const { UserService } = require('./services/database/UserService')
 const { InvitationService } = require('./services/database/InvitationService')
+const { RedisClient } = require('./services/redis/RedisClient')
 const { UserValidator, InvitationValidator, InvitationListValidator } = require('./validator')
 
 const init = async () => {
   const userService = new UserService()
   const invitationService = new InvitationService()
+  const redisClient = new RedisClient()
   const server = Hapi.server({
     port: process.env.PORT,
     host: process.env.HOST,
@@ -49,12 +51,12 @@ const init = async () => {
   {
     plugin: InvitationPlugin,
     options: {
-      service: invitationService,
+      service: [invitationService, redisClient],
       validator: [InvitationValidator, InvitationListValidator]
     }
   }
   ])
-
+  await redisClient.connect()
   await server.start()
   console.log(`Server berjalan pada ${server.info.uri}`)
 }
