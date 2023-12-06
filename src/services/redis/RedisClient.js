@@ -20,6 +20,7 @@ class RedisClient {
   }
 
   connect () {
+    console.log('Connecting to Redis...', process.env.REDIS_HOST, process.env.REDIS_PORT)
     this.client.connect()
   }
 
