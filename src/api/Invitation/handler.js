@@ -1,9 +1,11 @@
 const { v4: uuidv4 } = require('uuid')
 const { EncryptData, DecryptData } = require('../../config/modules')
+const { responseWrapper } = require('../../config/util')
 
 class InvitationHandler {
-  constructor (service, [validatorInvitationCode, validatorInvitationList]) {
-    this._service = service
+  constructor ([invitationService, reditClient], [validatorInvitationCode, validatorInvitationList]) {
+    this._service = invitationService
+    this._redis = reditClient
     this._validatorInvitationCode = validatorInvitationCode
     this._validatorInvitationList = validatorInvitationList
 
@@ -22,37 +24,25 @@ class InvitationHandler {
 
       this._validatorInvitationCode.validateInvitationCodePayload(data)
 
+      const { cache } = await this._redis.GetRedis(data.code)
+      if (cache != null) {
+        const payload = JSON.parse(cache)
+        return responseWrapper(h, 'success', 200, 1, { Description: 'Request Success', Result: payload })
+      }
+
       const { result, err } = await this._service.GetInvitation(data)
       if (err != null) {
-        const response = h.response({
-          status: 'fail',
-          statusCode: 0,
-          message: err.message
-        })
-        response.code(400)
-        return response
+        return responseWrapper(h, 'fail', 400, 0, err.message)
       }
 
       // const jsonResult = JSON.stringify(result)
       // const payload = EncryptData(result, process.env.ENCRYPTION_SECRET)
       const payload = JSON.stringify(result)
+      await this._redis.SetRedis(data.code, payload, 3600)
 
-      const response = h.response({
-        status: 'success',
-        code: 200,
-        statusCode: 1,
-        message: { Description: 'Request Success', Result: payload }
-      })
-      response.code(200)
-      return response
+      return responseWrapper(h, 'success', 200, 1, { Description: 'Request Success', Result: payload })
     } catch (error) {
-      const response = h.response({
-        status: 'fail',
-        statusCode: 0,
-        message: error.message
-      })
-      response.code(400)
-      return response
+      return responseWrapper(h, 'fail', 500, 0, error.message)
     }
   }
 
