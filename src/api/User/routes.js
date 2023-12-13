@@ -4,7 +4,7 @@ const userRoutes = (handler) => [
     path: '/api/user/register',
     options: {
       auth: { mode: 'optional' },
-      handler: handler.addUserHandler
+      handler: handler.userHandler
     }
   },
   // {

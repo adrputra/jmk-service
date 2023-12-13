@@ -35,7 +35,7 @@ const init = async () => {
 
   server.auth.strategy('jwt', 'jwt', {
     keys: process.env.JWT_SECRET, // Use a proper secret key from your environment
-    verify: { aud: false, iss: 'eventarry', sub: 'auth' }, // Optional: Audience verification
+    verify: { aud: false, iss: 'eventarry', sub: 'auth', exp: true, maxAgeSec: 14400 }, // Optional: Audience verification
     validate
   })
 
