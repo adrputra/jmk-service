@@ -6,12 +6,7 @@ class InvitationService {
     this._pool = Pool
   }
 
-  async GetInvitation (data) {
-    const query = {
-      text: 'SELECT code, user_id, name, level, phone_number FROM invitation_code WHERE code = ?',
-      values: [data.code]
-    }
-
+  async DB (query) {
     try {
       const result = await new Promise((resolve, reject) => {
         this._pool.query(query.text, query.values, (err, res) => {
@@ -31,31 +26,24 @@ class InvitationService {
     }
   }
 
+  async GetInvitation (data) {
+    const query = {
+      text: 'SELECT code, user_id, name, level, phone_number FROM invitation_code WHERE code = ?',
+      values: [data.code]
+    }
+
+    return await this.DB(query)
+  }
+
   async AddInvitation (data) {
     const createdAt = new Date()
 
     const query = {
       text: 'INSERT INTO invitation_code VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)',
-      values: [null, data.code, data.userId, data.name, data.level, data.phone_number, 'Invited', data.pax, createdAt]
+      values: [null, data.code, data.user_id, data.name, data.level, data.phone_number, 'Invited', data.pax, createdAt]
     }
 
-    try {
-      const result = await new Promise((resolve, reject) => {
-        this._pool.query(query.text, query.values, (err, res) => {
-          if (err) {
-            // console.log('CB ERR', err.message)
-            reject(err)
-          }
-          // console.log('CB RES', res)
-          resolve(res)
-        })
-      })
-      // console.log('RES SERVICE', result)
-      return { result, err: null }
-    } catch (error) {
-      // console.log('ERR SERVICE', error.sqlMessage)
-      return { result: null, err: error }
-    }
+    return await this.DB(query)
   }
 
   async EditInvitation (data) {
@@ -66,48 +54,16 @@ class InvitationService {
       values: [data.name, data.level, data.phone_number, data.status, data.pax, createdAt, data.code]
     }
 
-    try {
-      const result = await new Promise((resolve, reject) => {
-        this._pool.query(query.text, query.values, (err, res) => {
-          if (err) {
-            // console.log('CB ERR', err.message)
-            reject(err)
-          }
-          // console.log('CB RES', res)
-          resolve(res)
-        })
-      })
-      // console.log('RES SERVICE', result)
-      return { result, err: null }
-    } catch (error) {
-      // console.log('ERR SERVICE', error.sqlMessage)
-      return { result: null, err: error }
-    }
+    return await this.DB(query)
   }
 
   async GetInvitationList (data) {
     const query = {
       text: 'SELECT code, name, level, phone_number, status, pax FROM invitation_code WHERE user_id = ?',
-      values: [data.userId]
+      values: [data.user_id]
     }
 
-    try {
-      const result = await new Promise((resolve, reject) => {
-        this._pool.query(query.text, query.values, (err, res) => {
-          if (err) {
-            // console.log('CB ERR', err.message)
-            reject(err)
-          }
-          // console.log('CB RES', res)
-          resolve(res)
-        })
-      })
-      // console.log('RES SERVICE', result)
-      return { result, err: null }
-    } catch (error) {
-      // console.log('ERR SERVICE', error.sqlMessage)
-      return { result: null, err: error }
-    }
+    return await this.DB(query)
   }
 
   async DeleteInvitation (data) {
@@ -116,23 +72,7 @@ class InvitationService {
       values: [data.code]
     }
 
-    try {
-      const result = await new Promise((resolve, reject) => {
-        this._pool.query(query.text, query.values, (err, res) => {
-          if (err) {
-            // console.log('CB ERR', err.message)
-            reject(err)
-          }
-          // console.log('CB RES', res)
-          resolve(res)
-        })
-      })
-      // console.log('RES SERVICE', result)
-      return { result, err: null }
-    } catch (error) {
-      // console.log('ERR SERVICE', error.sqlMessage)
-      return { result: null, err: error }
-    }
+    return await this.DB(query)
   }
 }
 

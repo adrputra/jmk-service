@@ -17,16 +17,11 @@ exports.setup = function (options, seedLink) {
 
 exports.up = function (db, callback) {
   db.createTable('invitation_code', {
-    id: {
-      type: 'int',
-      primaryKey: true,
-      autoIncrement: true
-    },
     code: {
       type: 'string',
       notNull: true,
       length: 36,
-      unique: true
+      primaryKey: true
     },
     user_id: {
       type: 'string',

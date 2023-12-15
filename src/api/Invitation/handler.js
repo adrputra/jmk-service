@@ -3,9 +3,9 @@ const { EncryptData, DecryptData } = require('../../config/modules')
 const { responseWrapper } = require('../../config/util')
 
 class InvitationHandler {
-  constructor ([invitationService, reditClient], [validatorInvitationCode, validatorInvitationList]) {
+  constructor ([invitationService, redisClient], [validatorInvitationCode, validatorInvitationList]) {
     this._service = invitationService
-    this._redis = reditClient
+    this._redis = redisClient
     this._validatorInvitationCode = validatorInvitationCode
     this._validatorInvitationList = validatorInvitationList
 
@@ -13,7 +13,6 @@ class InvitationHandler {
     this.GetInvitationListHandler = this.GetInvitationListHandler.bind(this)
     this.AddInvitationHandler = this.AddInvitationHandler.bind(this)
     this.DeleteInvitationHandler = this.DeleteInvitationHandler.bind(this)
-    // this.AddInvitationHandler = this.AddInvitationHandler.bind(this)
   }
 
   async GetInvitationHandler (request, h) {
@@ -62,79 +61,33 @@ class InvitationHandler {
       if (data.act === 'c') {
         const { result, err } = await this._service.EditInvitation(data)
         if (err != null) {
-          const response = h.response({
-            status: 'fail',
-            statusCode: 0,
-            message: err.message
-          })
-          response.code(400)
-          return response
+          return responseWrapper(h, 'fail', 400, 0, err.message)
         }
 
         const payload = EncryptData(result, process.env.ENCRYPTION_SECRET)
-
-        const response = h.response({
-          status: 'success',
-          code: 200,
-          statusCode: 1,
-          message: { Description: 'Success Change Invitation', Result: payload }
-        })
-        response.code(200)
-        return response
+        return responseWrapper(h, 'success', 200, 1, { Description: 'Success Change Invitation Data', Result: payload })
       } else if (data.act === 'a') {
         data.code = generate8DigitUUID()
         const { result, err } = await this._service.AddInvitation(data)
         if (err != null) {
-          const response = h.response({
-            status: 'fail',
-            statusCode: 0,
-            message: err.message
-          })
-          response.code(400)
-          return response
+          return responseWrapper(h, 'fail', 400, 0, err.message)
         }
 
         // const jsonResult = JSON.stringify(result)
         const payload = EncryptData(result, process.env.ENCRYPTION_SECRET)
-        const response = h.response({
-          status: 'success',
-          code: 200,
-          statusCode: 1,
-          message: { Description: 'Success Create New Invitation', Result: payload }
-        })
-        response.code(200)
-        return response
+        return responseWrapper(h, 'success', 200, 1, { Description: 'Success Create New Invitation', Result: payload })
       } else if (data.act === 'd') {
         const { result, err } = await this._service.DeleteInvitation(data)
         if (err != null) {
-          const response = h.response({
-            status: 'fail',
-            statusCode: 0,
-            message: err.message
-          })
-          response.code(400)
-          return response
+          return responseWrapper(h, 'fail', 400, 0, err.message)
         }
 
         // const jsonResult = JSON.stringify(result)
         const payload = EncryptData(result, process.env.ENCRYPTION_SECRET)
-        const response = h.response({
-          status: 'success',
-          code: 200,
-          statusCode: 1,
-          message: { Description: 'Success Delete Invitation', Result: payload }
-        })
-        response.code(200)
-        return response
+        return responseWrapper(h, 'success', 200, 1, { Description: 'Success Delete Invitation', Result: payload })
       }
     } catch (error) {
-      const response = h.response({
-        status: 'fail',
-        statusCode: 0,
-        message: error.message
-      })
-      response.code(400)
-      return response
+      return responseWrapper(h, 'fail', 500, 0, error.message)
     }
   }
 
@@ -147,13 +100,7 @@ class InvitationHandler {
 
       const { result, err } = await this._service.GetInvitationList(data)
       if (err != null) {
-        const response = h.response({
-          status: 'fail',
-          statusCode: 0,
-          message: err.message
-        })
-        response.code(400)
-        return response
+        return responseWrapper(h, 'fail', 400, 0, err.message)
       }
 
       // const jsonResult = JSON.stringify(result)
@@ -168,13 +115,7 @@ class InvitationHandler {
       response.code(200)
       return response
     } catch (error) {
-      const response = h.response({
-        status: 'fail',
-        statusCode: 0,
-        message: error.message
-      })
-      response.code(400)
-      return response
+      return responseWrapper(h, 'fail', 500, 0, error.message)
     }
   }
 
@@ -185,44 +126,19 @@ class InvitationHandler {
 
       const { result, err } = await this._service.DeleteInvitation(data)
       if (err != null) {
-        const response = h.response({
-          status: 'fail',
-          statusCode: 0,
-          message: err.message
-        })
-        response.code(400)
-        return response
+        return responseWrapper(h, 'fail', 400, 0, err.message)
       }
 
       if (result.affectedRows === 0) {
-        const response = h.response({
-          status: 'fail',
-          statusCode: 0,
-          message: 'Data Not Found'
-        })
-        response.code(400)
-        return response
+        return responseWrapper(h, 'fail', 404, 0, 'Data Not Found')
       }
 
       // const jsonResult = JSON.stringify(result)
       const payload = EncryptData(result, process.env.ENCRYPTION_SECRET)
 
-      const response = h.response({
-        status: 'success',
-        code: 200,
-        statusCode: 1,
-        message: { Description: 'Delete Success', Result: payload }
-      })
-      response.code(200)
-      return response
+      return responseWrapper(h, 'success', 200, 1, { Description: 'Success Delete Invitation', Result: payload })
     } catch (error) {
-      const response = h.response({
-        status: 'fail',
-        statusCode: 0,
-        message: error.message
-      })
-      response.code(400)
-      return response
+      return responseWrapper(h, 'fail', 500, 0, error.message)
     }
   }
 }

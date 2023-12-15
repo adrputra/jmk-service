@@ -3,55 +3,58 @@
 const { EncryptPassword, DecryptPassword, EncryptData, DecryptData } = require('../../config/modules')
 const { v4: uuidv4 } = require('uuid')
 const Jwt = require('jsonwebtoken')
+const { responseWrapper } = require('../../config/util')
 
 class UserHandler {
   constructor (service, validator) {
     this._service = service
     this._validator = validator
 
-    this.addUserHandler = this.addUserHandler.bind(this)
+    this.userHandler = this.userHandler.bind(this)
     this.loginHandler = this.loginHandler.bind(this)
     this.logoutHandler = this.logoutHandler.bind(this)
     this.GetAllUser = this.GetAllUser.bind(this)
     // this.qrcodeHandler = this.qrcodeHandler.bind(this)
   }
 
-  async addUserHandler (request, h) {
+  async userHandler (request, h) {
     try {
-      this._validator.validateUserPayload(request.payload)
-      const data = request.payload
+      const data = DecryptData(request.payload.request, process.env.ENCRYPTION_SECRET)
+      console.log('RegisterHandler', data)
+
+      if (data.act === 'c') {
+        const { result, err } = await this._service.editUser(data)
+        if (err != null) {
+          return responseWrapper(h, 'fail', 400, 0, err.message)
+        }
+
+        const payload = EncryptData(result, process.env.ENCRYPTION_SECRET)
+        return responseWrapper(h, 'success', 200, 1, { Description: 'Success Change User Data', Result: payload })
+
+      } else if (data.act === 'a') {
+        data.password = EncryptPassword(data.password)
+        
+        const { result, err } = await this._service.addUser(data)
+
+        if (err != null) {
+          return responseWrapper(h, 'fail', 400, 0, err.message)
+        }
       
-      data.password = EncryptPassword(data.password)
+        const payload = EncryptData(result, process.env.ENCRYPTION_SECRET)
+        return responseWrapper(h, 'success', 200, 1, { Description: 'Success Create User', Result: payload })
+      } else if (data.act === 'd') {
+        
+        const { result, err } = await this._service.deleteUser(data)
 
-      const { result, err } = await this._service.addUser(data)
-
-      if (err != null) {
-        const response = h.response({
-          status: 'fail',
-          statusCode: 0,
-          message: err.message
-        })
-        response.code(400)
-        return response
+        if (err != null) {
+          return responseWrapper(h, 'fail', 400, 0, err.message)
+        }
+      
+        const payload = EncryptData(result, process.env.ENCRYPTION_SECRET)
+        return responseWrapper(h, 'success', 200, 1, { Description: 'Success Delete User', Result: payload })
       }
-      
-      const response = h.response({
-        status: 'success',
-        code: 201,
-        statusCode: 1,
-        message: { Description: 'Registered Successfully', result }
-      })
-      response.code(201)
-      return response
-      
     } catch (error) {
-      const response = h.response({
-        status: 'fail',
-        statusCode: 0,
-        message: error.message
-      })
-      response.code(400)
-      return response
+      return responseWrapper(h, 'fail', 500, 0, error.message)
     }
   }
 
@@ -59,27 +62,28 @@ class UserHandler {
     try {
       const data = DecryptData(request.payload.request, process.env.ENCRYPTION_SECRET)
       console.log('loginHandler', data)
-      const { result, err } = await this._service.getUser(data)
+
+      const query = {
+        text: 'SELECT DISTINCT * FROM user_access WHERE user_id = ?',
+        values: [data.user_id]
+      }
+
+      const { result, err } = await this._service.DB(query)
 
       if (err != null) {
-        const response = h.response({
-          status: 'fail',
-          statusCode: 0,
-          message: err.message
-        })
-        response.code(400)
-        return response
+        return responseWrapper(h, 'fail', 400, 0, err.message)
       }
 
       if (DecryptPassword(data.password, result[0].password)) {
+
         const { result: sessionId } = await this._service.getSessionIdByUser(data)        
 
         const metadata = {
-          userId: result[0].user_id,
-          fullName: result[0].full_name,
-          shortName: result[0].short_name,
-          branchCode: result[0].branch_code,
-          levelId: result[0].level_id,
+          user_id: result[0].user_id,
+          full_name: result[0].full_name,
+          short_name: result[0].short_name,
+          branch_code: result[0].branch_code,
+          level_id: result[0].level_id,
           sessionId: sessionId[0] ? sessionId[0].session_id : uuidv4(8)
         }
         
@@ -88,60 +92,33 @@ class UserHandler {
           payload,
           iss: 'eventarry', // Issuer
           sub: 'auth' 
-        }, process.env.JWT_SECRET, { expiresIn: '8h' })
+        }, process.env.JWT_SECRET, { expiresIn: '4h' })
 
         if (!sessionId[0]) {
           const dataSession = {
             uid: uuidv4(8),
             session: metadata.sessionId,
-            userId: data.userId,
-            expiredAt: 8
+            user_id: data.user_id,
+            expiredAt: 4
           }
           const { errSession } = await this._service.addSession(dataSession)
           
           if (errSession != null) {
-            const response = h.response({
-              status: 'fail',
-              statusCode: 0,
-              message: err.message
-            })
-            response.code(400)
-            return response
+            return responseWrapper(h, 'fail', 400, 0, err.message)
           }
         }
 
         // const jsonResult = JSON.stringify(result)
-        // const cookie = { uid: dataSession.uid, session: dataSession.session, userId: dataSession.userId }
+        // const cookie = { uid: dataSession.uid, session: dataSession.session, user_id: dataSession.user_id }
         
-        const response = h.response({
-          status: 'success',
-          code: 200,
-          statusCode: 1,
-          message: { Description: 'Login Successfully', token }
-        })
-        
-        // request.cookieAuth.set(cookie)
-        // response.header('Access-Control-Expose-Headers', 'set-cookie')
+        return responseWrapper(h, 'success', 200, 1, { Description: 'Login Successfully', token })
 
-        return response
       } else {
-        const response = h.response({
-          status: 'fail',
-          code: 404,
-          statusCode: 0,
-          message: { Description: 'Login Failed' }
-        })
+        return responseWrapper(h, 'fail', 404, 1, { Description: 'Login Failed. Incorrect Username or Password' })
 
-        return response
       }
     } catch (error) {
-      const response = h.response({
-        status: 'fail',
-        statusCode: 0,
-        message: error.message
-      })
-      response.code(400)
-      return response
+      return responseWrapper(h, 'fail', 500, 0, error.message)
     }
   }
 
@@ -152,33 +129,15 @@ class UserHandler {
       const { result, err } = await this._service.removeSession(data)
 
       if (err != null) {
-        const response = h.response({
-          status: 'fail',
-          statusCode: 0,
-          message: err.message
-        })
-        response.code(400)
-        return response
+        return responseWrapper(h, 'fail', 400, 0, err.message)
       }
 
       const payload = EncryptData(result, process.env.ENCRYPTION_SECRET)
 
-      const response = h.response({
-        status: 'success',
-        code: 200,
-        statusCode: 1,
-        message: { Description: 'Logout Successfully', Result: payload }
-      })
-      return response
+      return responseWrapper(h, 'success', 200, 1, { Description: 'Logout Successfully', Result: payload })
 
     } catch (error) {
-      const response = h.response({
-        status: 'fail',
-        statusCode: 0,
-        message: error.message
-      })
-      response.code(400)
-      return response
+      return responseWrapper(h, 'fail', 500, 0, error.message)
     }
   }
 
@@ -186,51 +145,29 @@ class UserHandler {
     try {
       const data = DecryptData(request.payload.request, process.env.ENCRYPTION_SECRET)
       console.log('GetAllUser', data)
+
       const { result, err } = await this._service.getUser(data)
 
       if (err != null) {
-        const response = h.response({
-          status: 'fail',
-          statusCode: 0,
-          message: err.message
-        })
-        response.code(400)
-        return response
+        return responseWrapper(h, 'fail', 400, 0, err.message)
       }
 
       if (result[0].level_id === '0') {
-        const { result, err } = await this._service.GetAllUser(data)
+
+        const { result, err } = await this._service.getAllUser(data)
 
         if (err != null) {
-          const response = h.response({
-            status: 'fail',
-            statusCode: 0,
-            message: err.message
-          })
-          response.code(400)
-          return response
+          return responseWrapper(h, 'fail', 400, 0, err.message)
         }
 
         const payload = EncryptData(result, process.env.ENCRYPTION_SECRET)
 
-        const response = h.response({
-          status: 'success',
-          code: 200,
-          statusCode: 1,
-          message: { Description: 'Get All User Success', Result: payload }
-        })
-        return response
+        return responseWrapper(h, 'success', 200, 1, { Description: 'Success Get All User', Result: payload })
 
       }
 
     } catch (error) {
-      const response = h.response({
-        status: 'fail',
-        statusCode: 0,
-        message: error.message
-      })
-      response.code(400)
-      return response
+      return responseWrapper(h, 'fail', 500, 0, error.message)
     }
   }
 
