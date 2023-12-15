@@ -1,0 +1,18 @@
+version: '3'
+
+networks:
+  net1:
+    external: true
+    name: mcu
+
+services:
+  invitation-svc:
+    image: invitation-svc
+    container_name: invitation-svc
+    ports:
+      - 8888:8888
+    networks:
+      - net1
+    restart: unless-stopped
+
+
