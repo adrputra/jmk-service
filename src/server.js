@@ -17,8 +17,8 @@ const init = async () => {
   const invitationService = new InvitationService()
   const redisClient = new RedisClient()
   const server = Hapi.server({
-    port: process.env.PORT,
-    host: process.env.HOST,
+    port: process.env.INVITATION_SVC_PORT,
+    host: process.env.INVITATION_SVC_HOST,
     routes: {
       cors: {
         credentials: true,
