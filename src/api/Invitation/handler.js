@@ -3,9 +3,10 @@ const { EncryptData, DecryptData } = require('../../config/modules')
 const { responseWrapper } = require('../../config/util')
 
 class InvitationHandler {
-  constructor ([invitationService, redisClient], [validatorInvitationCode, validatorInvitationList]) {
+  constructor ([invitationService, redisClient, rabbitMQ], [validatorInvitationCode, validatorInvitationList]) {
     this._service = invitationService
     this._redis = redisClient
+    this._rabbitMQ = rabbitMQ
     this._validatorInvitationCode = validatorInvitationCode
     this._validatorInvitationList = validatorInvitationList
 
@@ -13,6 +14,7 @@ class InvitationHandler {
     this.GetInvitationListHandler = this.GetInvitationListHandler.bind(this)
     this.AddInvitationHandler = this.AddInvitationHandler.bind(this)
     this.DeleteInvitationHandler = this.DeleteInvitationHandler.bind(this)
+    this.SendWhatsappHandler = this.SendWhatsappHandler.bind(this)
   }
 
   async GetInvitationHandler (request, h) {
@@ -137,6 +139,24 @@ class InvitationHandler {
       const payload = EncryptData(result, process.env.ENCRYPTION_SECRET)
 
       return responseWrapper(h, 'success', 200, 1, { Description: 'Success Delete Invitation', Result: payload })
+    } catch (error) {
+      return responseWrapper(h, 'fail', 500, 0, error.message)
+    }
+  }
+
+  async SendWhatsappHandler (request, h) {
+    try {
+      // const data = DecryptData(request.payload.request, process.env.ENCRYPTION_SECRET)
+      const data = request.payload
+      data.phone = `${data.phone}@c.us`
+      console.log('SendWhatsappHandler', data)
+
+      const result = await this._rabbitMQ.sendMessage('SendWhatsapp', JSON.stringify(data))
+
+      // const jsonResult = JSON.stringify(result)
+      const payload = EncryptData(result, process.env.ENCRYPTION_SECRET)
+
+      return responseWrapper(h, 'success', 200, 1, { Description: 'Success Send Whatsapp Invitation', Result: payload })
     } catch (error) {
       return responseWrapper(h, 'fail', 500, 0, error.message)
     }

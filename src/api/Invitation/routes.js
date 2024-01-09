@@ -34,6 +34,14 @@ const invitationRoutes = (handler) => [
     }
   },
   {
+    method: 'POST',
+    path: '/api/invitation/sendwhatsapp',
+    options: {
+      auth: { mode: 'required' },
+      handler: handler.SendWhatsappHandler
+    }
+  },
+  {
     method: 'GET',
     path: '/api/testconn',
     options: {
