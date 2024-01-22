@@ -25,7 +25,7 @@ class InvitationHandler {
 
       const { cache } = await this._redis.GetRedis(data.code)
       if (cache != null) {
-        const payload = JSON.parse(cache)
+        const payload = EncryptData(JSON.parse(cache), process.env.ENCRYPTION_SECRET)
         return responseWrapper(h, 'success', 200, 1, { Description: 'Request Success', Result: payload })
       }
 
@@ -36,8 +36,8 @@ class InvitationHandler {
 
       // const jsonResult = JSON.stringify(result)
       // const payload = EncryptData(result, process.env.ENCRYPTION_SECRET)
-      const payload = JSON.stringify(result)
-      await this._redis.SetRedis(data.code, payload, 3600)
+      await this._redis.SetRedis(data.code, JSON.stringify(result), 3600)
+      const payload = EncryptData(JSON.stringify(result), process.env.ENCRYPTION_SECRET)
 
       return responseWrapper(h, 'success', 200, 1, { Description: 'Request Success', Result: payload })
     } catch (error) {
@@ -62,6 +62,10 @@ class InvitationHandler {
         const { result, err } = await this._service.EditInvitation(data)
         if (err != null) {
           return responseWrapper(h, 'fail', 400, 0, err.message)
+        }
+
+        if (result.affectedRows === 0) {
+          return responseWrapper(h, 'fail', 404, 0, 'Data Not Found')
         }
 
         const payload = EncryptData(result, process.env.ENCRYPTION_SECRET)
