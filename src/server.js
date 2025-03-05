@@ -50,8 +50,8 @@ const init = async () => {
   }
   ])
 
-  await redisClient.connect()
-  await rabbitMQ.connect()
+  // await redisClient.connect()
+  // await rabbitMQ.connect()
 
   await server.start()
   console.log(`Server berjalan pada ${server.info.uri}`)

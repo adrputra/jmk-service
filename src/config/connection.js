@@ -20,7 +20,7 @@ class RabbitMQ {
 
   async connect () {
     try {
-      this.connection = await amqp.connect('amqp://localhost')
+      this.connection = await amqp.connect(`amqp://${process.env.RABBITMQ_USER}:${process.env.RABBITMQ_PASSWORD}@${process.env.RABBITMQ_HOST}:${process.env.RABBITMQ_PORT}`)
       this.channel = await this.connection.createChannel()
       console.log('Connected to RabbitMQ')
     } catch (error) {
