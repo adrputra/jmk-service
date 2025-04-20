@@ -28,7 +28,7 @@ class InvitationService {
 
   async GetInvitation (data) {
     const query = {
-      text: 'SELECT code, user_id, name, level, phone_number FROM invitation_code WHERE code = ?',
+      text: 'SELECT code, userId, name, level, phoneNumber FROM InvitationCode WHERE code = ?',
       values: [data.code]
     }
 
@@ -39,8 +39,8 @@ class InvitationService {
     const createdAt = new Date()
 
     const query = {
-      text: 'INSERT INTO invitation_code VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)',
-      values: [null, data.code, data.user_id, data.name, data.level, data.phone_number, 'Invited', data.pax, createdAt]
+      text: 'INSERT INTO InvitationCode VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)',
+      values: [null, data.code, data.userId, data.name, data.level, data.phoneNumber, 'Invited', data.pax, createdAt]
     }
 
     return await this.DB(query)
@@ -50,8 +50,8 @@ class InvitationService {
     const createdAt = new Date()
 
     const query = {
-      text: 'UPDATE invitation_code SET name = ?, level = ?, phone_number = ?, status = ?, pax = ?, created_at = ? WHERE code = ?',
-      values: [data.name, data.level, data.phone_number, data.status, data.pax, createdAt, data.code]
+      text: 'UPDATE InvitationCode SET name = ?, level = ?, phoneNumber = ?, status = ?, pax = ?, createdAt = ? WHERE code = ?',
+      values: [data.name, data.level, data.phoneNumber, data.status, data.pax, createdAt, data.code]
     }
 
     return await this.DB(query)
@@ -59,8 +59,8 @@ class InvitationService {
 
   async GetInvitationList (data) {
     const query = {
-      text: 'SELECT code, name, level, phone_number, status, pax FROM invitation_code WHERE user_id = ?',
-      values: [data.user_id]
+      text: 'SELECT code, name, level, phoneNumber, status, pax FROM InvitationCode WHERE userId = ?',
+      values: [data.userId]
     }
 
     return await this.DB(query)
@@ -68,7 +68,7 @@ class InvitationService {
 
   async DeleteInvitation (data) {
     const query = {
-      text: 'DELETE FROM invitation_code WHERE code = ?',
+      text: 'DELETE FROM InvitationCode WHERE code = ?',
       values: [data.code]
     }
 

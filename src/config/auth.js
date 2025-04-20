@@ -34,7 +34,7 @@ const validate = async (request, h) => {
 
     // Example pseudo-code:
     const session = await getSessionById(sessionId)
-    if (session.result[0]?.expired_at <= new Date()) {
+    if (session.result[0]?.expiredAt <= new Date()) {
       return { isValid: false, error: 'Session not found or expired' }
     }
 
@@ -49,7 +49,7 @@ const validate = async (request, h) => {
 
 const getSessionById = async (sessionId) => {
   const query = {
-    text: 'SELECT session_id, expired_at FROM session_auth WHERE session_id = ?',
+    text: 'SELECT session_id, expiredAt FROM SessionAuth WHERE session_id = ?',
     values: [sessionId]
   }
 

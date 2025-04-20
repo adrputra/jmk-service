@@ -30,8 +30,8 @@ class UserService {
     const createdAt = new Date()
 
     const query = {
-      text: 'INSERT INTO user_access VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)',
-      values: [null, data.user_id, data.full_name, data.short_name, data.password, data.user_id, data.level_id, createdAt, createdAt]
+      text: 'INSERT INTO User VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)',
+      values: [null, data.userId, data.fullName, data.shortName, data.password, data.userId, data.levelId, createdAt, createdAt]
     }
 
     return await this.DB(query)
@@ -41,8 +41,8 @@ class UserService {
     const updatedAt = new Date()
 
     const query = {
-      text: 'UPDATE user_access SET full_name = ?, short_name = ?, level_id = ?, updated_at = ? WHERE user_id = ?',
-      values: [data.full_name, data.short_name, data.level_id, updatedAt, data.user_id]
+      text: 'UPDATE User SET fullName = ?, shortName = ?, levelId = ?, updatedAt = ? WHERE userId = ?',
+      values: [data.fullName, data.shortName, data.levelId, updatedAt, data.userId]
     }
 
     return await this.DB(query)
@@ -50,8 +50,8 @@ class UserService {
 
   async deleteUser (data) {
     const query = {
-      text: 'DELETE FROM user_access WHERE user_id = ?',
-      values: [data.user_id]
+      text: 'DELETE FROM User WHERE userId = ?',
+      values: [data.userId]
     }
 
     return await this.DB(query)
@@ -59,8 +59,8 @@ class UserService {
 
   async getUser (data) {
     const query = {
-      text: 'SELECT DISTINCT * FROM user_access WHERE user_id = ?',
-      values: [data.user_id]
+      text: 'SELECT DISTINCT * FROM User WHERE userId = ?',
+      values: [data.userId]
     }
 
     return await this.DB(query)
@@ -71,8 +71,8 @@ class UserService {
     const expiredAt = new Date(createdAt.getTime() + data.expiredAt * 60 * 60 * 1000)
 
     const query = {
-      text: 'INSERT INTO session_auth VALUES(?, ?, ?, ?, ?, ?)',
-      values: [null, data.uid, data.session, data.user_id, createdAt, expiredAt]
+      text: 'INSERT INTO SessionAuth VALUES(?, ?, ?, ?, ?, ?)',
+      values: [null, data.uid, data.session, data.userId, createdAt, expiredAt]
     }
 
     return await this.DB(query)
@@ -83,8 +83,8 @@ class UserService {
     // const format = now.toISOString().slice(0, 19).replace('T', ' ')
 
     const query = {
-      text: 'SELECT session_id FROM session_auth WHERE user_id = ? AND expired_at > ?',
-      values: [data.user_id, now]
+      text: 'SELECT session_id FROM SessionAuth WHERE userId = ? AND expiredAt > ?',
+      values: [data.userId, now]
     }
 
     return await this.DB(query)
@@ -94,7 +94,7 @@ class UserService {
     const now = new Date()
 
     const query = {
-      text: 'UPDATE session_auth SET expired_at = ? WHERE session_id = ?',
+      text: 'UPDATE SessionAuth SET expiredAt = ? WHERE session_id = ?',
       values: [now, data.sessionId]
     }
 
@@ -103,8 +103,8 @@ class UserService {
 
   async getAllUser (data) {
     const query = {
-      text: 'SELECT user_id, level_id, full_name, short_name FROM user_access WHERE user_id != ?',
-      values: [data.user_id]
+      text: 'SELECT userId, levelId, fullName, shortName FROM User WHERE userId != ?',
+      values: [data.userId]
     }
 
     return await this.DB(query)

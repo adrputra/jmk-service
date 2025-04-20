@@ -64,8 +64,8 @@ class UserHandler {
       console.log('loginHandler', data)
 
       const query = {
-        text: 'SELECT DISTINCT * FROM user_access WHERE user_id = ?',
-        values: [data.user_id]
+        text: 'SELECT DISTINCT * FROM User WHERE userId = ?',
+        values: [data.userId]
       }
 
       const { result, err } = await this._service.DB(query)
@@ -79,11 +79,11 @@ class UserHandler {
         const { result: sessionId } = await this._service.getSessionIdByUser(data)        
 
         const metadata = {
-          user_id: result[0].user_id,
-          full_name: result[0].full_name,
-          short_name: result[0].short_name,
-          branch_code: result[0].branch_code,
-          level_id: result[0].level_id,
+          userId: result[0].userId,
+          fullName: result[0].fullName,
+          shortName: result[0].shortName,
+          branchCode: result[0].branchCode,
+          levelId: result[0].levelId,
           sessionId: sessionId[0] ? sessionId[0].session_id : uuidv4(8)
         }
         
@@ -98,7 +98,7 @@ class UserHandler {
           const dataSession = {
             uid: uuidv4(8),
             session: metadata.sessionId,
-            user_id: data.user_id,
+            userId: data.userId,
             expiredAt: 4
           }
           const { errSession } = await this._service.addSession(dataSession)
@@ -109,7 +109,7 @@ class UserHandler {
         }
 
         // const jsonResult = JSON.stringify(result)
-        // const cookie = { uid: dataSession.uid, session: dataSession.session, user_id: dataSession.user_id }
+        // const cookie = { uid: dataSession.uid, session: dataSession.session, userId: dataSession.userId }
         
         return responseWrapper(h, 'success', 200, 1, { Description: 'Login Successfully', token })
 
@@ -152,7 +152,7 @@ class UserHandler {
         return responseWrapper(h, 'fail', 400, 0, err.message)
       }
 
-      if (result[0].level_id === '0') {
+      if (result[0].levelId === '0') {
 
         const { result, err } = await this._service.getAllUser(data)
 
