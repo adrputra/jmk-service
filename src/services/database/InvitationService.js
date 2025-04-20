@@ -39,8 +39,8 @@ class InvitationService {
     const createdAt = new Date()
 
     const query = {
-      text: 'INSERT INTO InvitationCode VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)',
-      values: [null, data.code, data.userId, data.name, data.level, data.phoneNumber, 'Invited', data.pax, createdAt]
+      text: 'INSERT INTO InvitationCode VALUES(?, ?, ?, ?, ?, ?, ?, ?)',
+      values: [data.code, data.userId, data.name, data.level, data.phoneNumber, 'Invited', data.pax, createdAt]
     }
 
     return await this.DB(query)

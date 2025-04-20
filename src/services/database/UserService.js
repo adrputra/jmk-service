@@ -30,8 +30,8 @@ class UserService {
     const createdAt = new Date()
 
     const query = {
-      text: 'INSERT INTO User VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)',
-      values: [null, data.userId, data.fullName, data.shortName, data.password, data.userId, data.levelId, createdAt, createdAt]
+      text: 'INSERT INTO User VALUES(?, ?, ?, ?, ?, ?, ?, ?)',
+      values: [data.userId, data.fullName, data.shortName, data.password, data.userId, data.levelId, createdAt, createdAt]
     }
 
     return await this.DB(query)
@@ -83,7 +83,7 @@ class UserService {
     // const format = now.toISOString().slice(0, 19).replace('T', ' ')
 
     const query = {
-      text: 'SELECT session_id FROM SessionAuth WHERE userId = ? AND expiredAt > ?',
+      text: 'SELECT sessionId FROM SessionAuth WHERE userId = ? AND expiredAt > ?',
       values: [data.userId, now]
     }
 
@@ -94,7 +94,7 @@ class UserService {
     const now = new Date()
 
     const query = {
-      text: 'UPDATE SessionAuth SET expiredAt = ? WHERE session_id = ?',
+      text: 'UPDATE SessionAuth SET expiredAt = ? WHERE sessionId = ?',
       values: [now, data.sessionId]
     }
 

@@ -77,14 +77,13 @@ class UserHandler {
       if (DecryptPassword(data.password, result[0].password)) {
 
         const { result: sessionId } = await this._service.getSessionIdByUser(data)        
-
         const metadata = {
           userId: result[0].userId,
           fullName: result[0].fullName,
           shortName: result[0].shortName,
           branchCode: result[0].branchCode,
           levelId: result[0].levelId,
-          sessionId: sessionId[0] ? sessionId[0].session_id : uuidv4(8)
+          sessionId: sessionId[0] ? sessionId[0].sessionId : uuidv4(8)
         }
         
         const payload = EncryptData(metadata, process.env.ENCRYPTION_SECRET)

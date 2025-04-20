@@ -26,9 +26,9 @@ const validate = async (request, h) => {
     // If the token is valid, you can extract information from it if needed
     const decodedToken = DecryptData(request.decoded.payload.payload, process.env.ENCRYPTION_SECRET)
 
-    // Here, you can add code to check the database for the session_id
+    // Here, you can add code to check the database for the sessionId
     const sessionId = decodedToken.sessionId
-    // Use the session_id to query the database and check if the session is still valid
+    // Use the sessionId to query the database and check if the session is still valid
     // If the session is not found or is expired, return { isValid: false, error: 'Session not found or expired' }
     // Otherwise, return { isValid: true, credentials: your_user_data }
 
@@ -49,7 +49,7 @@ const validate = async (request, h) => {
 
 const getSessionById = async (sessionId) => {
   const query = {
-    text: 'SELECT session_id, expiredAt FROM SessionAuth WHERE session_id = ?',
+    text: 'SELECT sessionId, expiredAt FROM SessionAuth WHERE sessionId = ?',
     values: [sessionId]
   }
 
