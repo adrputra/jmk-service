@@ -19,4 +19,4 @@ COPY . .
 EXPOSE 8888
 
 # Specify the command to run your application
-CMD [ "npm", "run", "serve" ]
+CMD [ "npm", "run", "dev" ]
