@@ -2,7 +2,7 @@ name: CI/CD EVENTARRY INVITATION SVC
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   build:
