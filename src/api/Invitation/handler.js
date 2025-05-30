@@ -39,7 +39,7 @@ class InvitationHandler {
       const payload = JSON.stringify(result)
       await this._redis.SetRedis(data.code, payload, 3600)
 
-      return responseWrapper(h, 'success', 200, 1, { Description: 'Request Success', Result: payload })
+      return responseWrapper(h, 'success', 200, 1, { Description: 'Request Success', Result: result })
     } catch (error) {
       return responseWrapper(h, 'fail', 500, 0, error.message)
     }
